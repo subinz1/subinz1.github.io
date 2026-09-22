@@ -50,18 +50,31 @@
         </div>
 
         <div class="signal-panel" data-reveal data-delay="120">
-          <div class="signal-panel__top"><span>CRCR / relay topology</span><span class="live-label">LIVE SYSTEM</span></div>
-          <div class="signal-map" aria-label="Diagram showing PyTorch changes flowing through the CRCR relay to partner CI and the HUD">
-            <div class="signal-node source"><strong>PyTorch</strong><small>PR + nightly SHA</small></div>
-            <div class="signal-line line-a" aria-hidden="true"></div>
-            <div class="signal-node relay"><strong>CRCR</strong><small>trusted relay</small></div>
-            <div class="signal-line line-b" aria-hidden="true"></div>
-            <div class="signal-node partner"><strong>Partners</strong><small>OOT CI</small></div>
-            <div class="signal-line line-c" aria-hidden="true"></div>
-            <div class="signal-node hud"><strong>HUD</strong><small>actionable signal</small></div>
+          <div class="signal-panel__top"><span>CRCR / system flow</span><span class="live-label">EVENT → RESULT</span></div>
+          <div class="signal-map" aria-label="Diagram showing a PyTorch event dispatched through CRCR to partner CI, followed by an OIDC callback into the CI HUD">
+            <svg class="signal-flow" viewBox="0 0 500 300" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <marker id="signal-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" />
+                </marker>
+              </defs>
+              <path class="signal-flow__line" d="M 150 69 H 180" marker-end="url(#signal-arrow)" />
+              <text class="signal-flow__label" x="157" y="51">event</text>
+              <path class="signal-flow__line" d="M 310 69 H 340" marker-end="url(#signal-arrow)" />
+              <text class="signal-flow__label" x="315" y="51">dispatch</text>
+              <path class="signal-flow__line" d="M 410 117 V 182" marker-end="url(#signal-arrow)" />
+              <text class="signal-flow__label" x="420" y="153">OIDC</text>
+              <path class="signal-flow__line" d="M 340 233 H 310" marker-end="url(#signal-arrow)" />
+              <text class="signal-flow__label" x="316" y="215">result</text>
+            </svg>
+            <div class="signal-node source"><strong>PyTorch</strong><small>PR / commit SHA</small></div>
+            <div class="signal-node relay"><strong>CRCR relay</strong><small>webhook + dispatch</small></div>
+            <div class="signal-node partner"><strong>Partner CI</strong><small>build + test</small></div>
+            <div class="signal-node callback"><strong>Callback</strong><small>verified OIDC</small></div>
+            <div class="signal-node hud"><strong>CI HUD</strong><small>persist + query</small></div>
           </div>
           <div class="signal-panel__footer">
-            <span>verify identity</span><i></i><span>preserve evidence</span><i></i><span>surface results</span>
+            <span>verify identity</span><i></i><span>route events</span><i></i><span>surface results</span>
           </div>
         </div>
 
