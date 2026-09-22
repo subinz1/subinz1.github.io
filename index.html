@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Subin George is a PyTorch contributor building reliable CI and ML infrastructure."
+    />
+    <meta name="theme-color" content="#0a1020" />
+    <title>Subin George — ML infrastructure &amp; PyTorch</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="page-glow glow-one" aria-hidden="true"></div>
+    <div class="page-glow glow-two" aria-hidden="true"></div>
+
+    <header class="site-header" data-header>
+      <a class="brand" href="#home" aria-label="Subin George home">SG<span>/</span></a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="sr-only">Open navigation</span><span></span><span></span>
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
+        <a href="#work">Work</a>
+        <a href="#approach">Approach</a>
+        <a href="#talk">Talk</a>
+        <a href="#now">Now</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">
+        <span aria-hidden="true">◐</span>
+      </button>
+    </header>
+
+    <main id="main">
+      <section id="home" class="hero section-shell">
+        <div class="hero-copy" data-reveal>
+          <p class="eyebrow"><span class="status-dot"></span> ML systems · CI reliability · open source</p>
+          <h1>I build the feedback loops that keep <em>PyTorch</em> compatible.</h1>
+          <p class="hero-lede">
+            I'm Subin George, a PyTorch contributor focused on the infrastructure that helps
+            upstream changes and independently maintained hardware backends move together.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#work">Explore selected work <span aria-hidden="true">↘</span></a>
+            <button class="button button-quiet" type="button" data-copy-link>Copy portfolio link</button>
+          </div>
+        </div>
+
+        <div class="signal-panel" data-reveal data-delay="120">
+          <div class="signal-panel__top"><span>CRCR / relay topology</span><span class="live-label">LIVE SYSTEM</span></div>
+          <div class="signal-map" aria-label="Diagram showing PyTorch changes flowing through the CRCR relay to partner CI and the HUD">
+            <div class="signal-node source"><strong>PyTorch</strong><small>PR + nightly SHA</small></div>
+            <div class="signal-line line-a" aria-hidden="true"></div>
+            <div class="signal-node relay"><strong>CRCR</strong><small>trusted relay</small></div>
+            <div class="signal-line line-b" aria-hidden="true"></div>
+            <div class="signal-node partner"><strong>Partners</strong><small>OOT CI</small></div>
+            <div class="signal-line line-c" aria-hidden="true"></div>
+            <div class="signal-node hud"><strong>HUD</strong><small>actionable signal</small></div>
+          </div>
+          <div class="signal-panel__footer">
+            <span>verify identity</span><i></i><span>preserve evidence</span><i></i><span>surface results</span>
+          </div>
+        </div>
+
+        <div class="hero-proof" aria-label="Selected contribution highlights" data-reveal data-delay="180">
+          <div><strong>64</strong><span>test-infra PRs</span></div>
+          <div><strong>45</strong><span>PyTorch PRs</span></div>
+          <div><strong>L1–L4</strong><span>partner trust model</span></div>
+        </div>
+      </section>
+
+      <section class="statement section-shell" data-reveal>
+        <p class="eyebrow">The problem I care about</p>
+        <div>
+          <h2>Compatibility should be discovered while a change is still actionable—not during a release or a week of bisection.</h2>
+          <p>
+            My work sits at the intersection of CI reliability, backend onboarding, and developer
+            experience: make the signal trustworthy, make failures explainable, and keep the
+            integration path proportional to a partner's maturity.
+          </p>
+        </div>
+      </section>
+
+      <section id="work" class="work section-shell">
+        <div class="section-heading" data-reveal>
+          <div><p class="eyebrow">Selected work</p><h2>Systems with a clear path from signal to owner.</h2></div>
+          <p class="section-note" aria-live="polite" data-filter-status>Showing all projects</p>
+        </div>
+        <div class="filters" role="group" aria-label="Filter projects" data-reveal>
+          <button type="button" class="filter is-active" data-filter="all" aria-pressed="true">All</button>
+          <button type="button" class="filter" data-filter="infra" aria-pressed="false">Infrastructure</button>
+          <button type="button" class="filter" data-filter="open-source" aria-pressed="false">Open source</button>
+          <button type="button" class="filter" data-filter="teaching" aria-pressed="false">Teaching</button>
+        </div>
+        <div class="project-grid">
+          <article class="project-card project-card--feature" data-project="infra open-source" data-reveal>
+            <div class="project-meta"><span>01</span><span>PyTorch ecosystem</span></div>
+            <h3>Cross-Repository CI Relay</h3>
+            <p>
+              A tiered relay that forwards PyTorch change events to out-of-tree backend CI and
+              returns authenticated compatibility results to the PyTorch CI HUD.
+            </p>
+            <ul class="tag-list"><li>OIDC</li><li>AWS Lambda</li><li>DynamoDB</li><li>ClickHouse</li><li>Next.js</li></ul>
+            <a class="text-link" href="https://hud.pytorch.org/crcr" target="_blank" rel="noreferrer">View the CRCR HUD <span aria-hidden="true">↗</span></a>
+          </article>
+          <article class="project-card" data-project="infra" data-reveal data-delay="70">
+            <div class="project-meta"><span>02</span><span>Downstream CI</span></div>
+            <h3>RHEL CI for PyTorch</h3>
+            <p>Nightly RHEL 9 build and test automation with targeted test selection, container publishing, and relay-backed HUD reporting.</p>
+            <ul class="tag-list"><li>Podman</li><li>GitHub Actions</li><li>Buildkite</li></ul>
+            <a class="text-link" href="https://github.com/TorchedHat/pytorch-redhat-ci" target="_blank" rel="noreferrer">Explore the repository <span aria-hidden="true">↗</span></a>
+          </article>
+          <article class="project-card" data-project="teaching open-source" data-reveal data-delay="140">
+            <div class="project-meta"><span>03</span><span>Practical learning</span></div>
+            <h3>PyTorch Reference Guide</h3>
+            <p>A growing collection of practical modules, reference cards, and runnable examples—from tensor foundations to CI debugging.</p>
+            <ul class="tag-list"><li>Python</li><li>PyTorch</li><li>Documentation</li></ul>
+            <a class="text-link" href="https://github.com/subinz1/pytorch-reference-guide" target="_blank" rel="noreferrer">Read the guide <span aria-hidden="true">↗</span></a>
+          </article>
+          <article class="project-card" data-project="open-source" data-reveal>
+            <div class="project-meta"><span>04</span><span>Core contribution</span></div>
+            <h3>PyTorch &amp; test-infra</h3>
+            <p>Core fixes and CI/HUD improvements spanning numerical correctness, distributed systems, and out-of-tree backend workflows.</p>
+            <ul class="tag-list"><li>Python</li><li>C++</li><li>TypeScript</li></ul>
+            <a class="text-link" href="https://github.com/pytorch/test-infra" target="_blank" rel="noreferrer">See test-infra <span aria-hidden="true">↗</span></a>
+          </article>
+        </div>
+      </section>
+
+      <section id="approach" class="approach section-shell">
+        <div class="section-heading" data-reveal><div><p class="eyebrow">How I work</p><h2>Reliable systems are designed for their difficult days.</h2></div></div>
+        <ol class="principles">
+          <li data-reveal><span>01</span><div><h3>Make identity explicit</h3><p>Derive trust from verified claims and configuration—not from untrusted result text.</p></div></li>
+          <li data-reveal data-delay="70"><span>02</span><div><h3>Preserve the diagnostic trail</h3><p>A dashboard result should lead back to a run, an attempt, a callback, and an owner.</p></div></li>
+          <li data-reveal data-delay="140"><span>03</span><div><h3>Earn stronger integration</h3><p>Start observably, measure reliability, then promote partners only when the signal is ready to influence merges.</p></div></li>
+        </ol>
+      </section>
+
+      <section id="talk" class="talk section-shell" data-reveal>
+        <div class="talk-card">
+          <p class="eyebrow">PyTorch Conference North America 2026 · Lightning talk</p>
+          <h2>Scaling PyTorch's Compatibility Promise</h2>
+          <p>
+            A look at the tiered Cross-Repository CI Relay: real-time downstream validation,
+            authenticated result ingestion, and a lower-risk path for hardware backends to join
+            the PyTorch ecosystem.
+          </p>
+          <a class="button button-primary" href="talks.md">Read the talk overview <span aria-hidden="true">↘</span></a>
+        </div>
+      </section>
+
+      <section id="now" class="now section-shell" data-reveal>
+        <div><p class="eyebrow">Now</p><h2>Making relay health and nightly compatibility easier to trust.</h2></div>
+        <p>
+          Current CRCR work focuses on surfacing stuck health probes, separating nightly-only
+          partners from pull-request integrations, and making HUD metrics explainable from the
+          underlying job matrix.
+        </p>
+        <a class="text-link" href="now.md">More about what I'm working on <span aria-hidden="true">↘</span></a>
+      </section>
+    </main>
+
+    <footer class="site-footer section-shell">
+      <p>Built for the people who make ML systems dependable.</p>
+      <div><a href="https://github.com/subinz1" target="_blank" rel="noreferrer">GitHub ↗</a><a href="projects.md">Projects</a><a href="talks.md">Talk</a></div>
+      <span>© <span data-year></span> Subin George</span>
+    </footer>
+    <div class="toast" role="status" aria-live="polite" data-toast></div>
+  </body>
+</html>
+
