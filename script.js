@@ -75,15 +75,49 @@ filters.forEach((filter) => filter.addEventListener("click", () => {
 }));
 
 const toast = document.querySelector("[data-toast]");
+let toastTimeout;
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.add("is-visible");
+  window.clearTimeout(toastTimeout);
+  toastTimeout = window.setTimeout(() => toast.classList.remove("is-visible"), 4200);
+}
+
 document.querySelector("[data-copy-link]").addEventListener("click", async () => {
   try {
     await navigator.clipboard.writeText(window.location.origin);
-    toast.textContent = "Portfolio link copied";
+    showToast("Portfolio link copied");
   } catch {
-    toast.textContent = "Copy this link: " + window.location.origin;
+    showToast("Copy this link: " + window.location.origin);
   }
-  toast.classList.add("is-visible");
-  window.setTimeout(() => toast.classList.remove("is-visible"), 2600);
+});
+
+const contactForm = document.querySelector("[data-contact-form]");
+const contactSubmit = document.querySelector("[data-contact-submit]");
+contactForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  contactSubmit.disabled = true;
+  contactForm.setAttribute("aria-busy", "true");
+
+  try {
+    const response = await fetch(contactForm.action, {
+      method: contactForm.method,
+      body: new FormData(contactForm),
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null);
+      const message = payload?.errors?.map((error) => error.message).join(" ");
+      throw new Error(message || "Unable to send your request. Please try again.");
+    }
+    contactForm.reset();
+    showToast("Thanks — your connection request is on its way.");
+  } catch (error) {
+    showToast(error instanceof Error ? error.message : "Unable to send your request. Please try again.");
+  } finally {
+    contactSubmit.disabled = false;
+    contactForm.removeAttribute("aria-busy");
+  }
 });
 
 document.querySelector("[data-year]").textContent = new Date().getFullYear();
