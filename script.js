@@ -28,16 +28,21 @@ nav.querySelectorAll("a").forEach((link) => link.addEventListener("click", () =>
 const header = document.querySelector("[data-header]");
 window.addEventListener("scroll", () => header.classList.toggle("is-scrolled", window.scrollY > 16), { passive: true });
 
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) entry.target.classList.add("is-visible");
-  });
-}, { threshold: 0.12 });
+const revealTargets = document.querySelectorAll("[data-reveal]");
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+if ("IntersectionObserver" in window && !reducedMotion.matches) {
+  root.classList.add("reveal-ready");
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) entry.target.classList.add("is-visible");
+    });
+  }, { threshold: 0.12 });
 
-document.querySelectorAll("[data-reveal]").forEach((element) => {
-  element.style.setProperty("--delay", `${element.dataset.delay || 0}ms`);
-  revealObserver.observe(element);
-});
+  revealTargets.forEach((element) => {
+    element.style.setProperty("--delay", `${element.dataset.delay || 0}ms`);
+    revealObserver.observe(element);
+  });
+}
 
 const sectionObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
@@ -82,4 +87,3 @@ document.querySelector("[data-copy-link]").addEventListener("click", async () =>
 });
 
 document.querySelector("[data-year]").textContent = new Date().getFullYear();
-
