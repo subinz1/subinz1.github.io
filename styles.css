@@ -46,8 +46,9 @@ button { color: inherit; cursor: pointer; }
 
 .site-header { align-items: center; backdrop-filter: blur(18px); border-bottom: 1px solid transparent; display: flex; height: var(--header-height); justify-content: space-between; left: 0; padding: 0 max(1.5rem, calc((100vw - var(--max)) / 2)); position: fixed; right: 0; top: 0; transition: background .25s, border-color .25s; z-index: 10; }
 .site-header.is-scrolled { background: color-mix(in srgb, var(--bg) 78%, transparent); border-color: var(--line); }
-.brand { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 1.25rem; font-weight: 800; letter-spacing: -.08em; }
-.brand span { color: var(--accent); }
+.brand { align-items: center; display: inline-flex; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .78rem; font-weight: 800; gap: .45rem; letter-spacing: .1em; }
+.brand-mark { border-radius: .5rem; display: block; height: 2rem; width: 2rem; }
+.brand-slash { color: var(--accent); font-size: 1rem; margin-left: -.35rem; }
 .site-nav { display: flex; gap: 1.5rem; margin-left: auto; margin-right: 1.25rem; }
 .site-nav a { color: var(--muted); font-size: .9rem; position: relative; }
 .site-nav a::after { background: var(--accent); bottom: -.5rem; content: ""; height: 2px; left: 0; position: absolute; transform: scaleX(0); transform-origin: right; transition: transform .2s; width: 100%; }
