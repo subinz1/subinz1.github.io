@@ -83,15 +83,6 @@ function showToast(message) {
   toastTimeout = window.setTimeout(() => toast.classList.remove("is-visible"), 4200);
 }
 
-document.querySelector("[data-copy-link]").addEventListener("click", async () => {
-  try {
-    await navigator.clipboard.writeText(window.location.origin);
-    showToast("Portfolio link copied");
-  } catch {
-    showToast("Copy this link: " + window.location.origin);
-  }
-});
-
 const contactForm = document.querySelector("[data-contact-form]");
 const contactSubmit = document.querySelector("[data-contact-submit]");
 contactForm.addEventListener("submit", async (event) => {
