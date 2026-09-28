@@ -41,13 +41,13 @@ function renderFiles(files) {
     const button = document.createElement("button");
 
     name.textContent = file.name;
-    meta.textContent = `${formatBytes(file.size)} · added ${new Intl.DateTimeFormat(undefined, {
+    meta.textContent = `${formatBytes(file.size)} · updated ${new Intl.DateTimeFormat(undefined, {
       dateStyle: "medium",
     }).format(new Date(file.uploaded))}`;
     button.className = "button button-quiet";
     button.type = "button";
     button.textContent = "Download ↘";
-    button.addEventListener("click", () => downloadFile(file.name, button));
+    button.addEventListener("click", () => downloadFile(file, button));
 
     details.append(name, meta);
     item.append(details, button);
@@ -55,13 +55,13 @@ function renderFiles(files) {
   });
 }
 
-async function downloadFile(name, button) {
+async function downloadFile(file, button) {
   button.disabled = true;
   const originalLabel = button.textContent;
   button.textContent = "Preparing…";
 
   try {
-    const response = await fetch(`${endpoint}/api/download/${encodeURIComponent(name)}`, {
+    const response = await fetch(`${endpoint}/api/download/${encodeURIComponent(file.id)}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!response.ok) throw new Error("The file is no longer available.");
@@ -70,7 +70,7 @@ async function downloadFile(name, button) {
     const url = URL.createObjectURL(file);
     const link = document.createElement("a");
     link.href = url;
-    link.download = name.split("/").pop();
+    link.download = file.name;
     link.click();
     URL.revokeObjectURL(url);
   } catch (error) {

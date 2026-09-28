@@ -1,6 +1,28 @@
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 const sessionLifetimeSeconds = 60 * 60 * 8;
+const googleTokenUrl = "https://oauth2.googleapis.com/token";
+const driveApiBase = "https://www.googleapis.com/drive/v3";
+const driveScope = "https://www.googleapis.com/auth/drive.readonly";
+
+const googleWorkspaceExports = {
+  "application/vnd.google-apps.document": {
+    extension: ".pdf",
+    mimeType: "application/pdf",
+  },
+  "application/vnd.google-apps.presentation": {
+    extension: ".pptx",
+    mimeType:
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  },
+  "application/vnd.google-apps.spreadsheet": {
+    extension: ".xlsx",
+    mimeType:
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  },
+};
+
+let googleTokenCache;
 
 function json(body, status = 200, headers = {}) {
   return new Response(JSON.stringify(body), {
@@ -37,6 +59,39 @@ function base64UrlBytes(value) {
     "="
   );
   return Uint8Array.from(atob(padded), (character) => character.charCodeAt(0));
+}
+
+function configurationReady(env) {
+  return [
+    env.PORTFOLIO_USERNAME,
+    env.PORTFOLIO_PASSWORD,
+    env.PORTFOLIO_SESSION_SECRET,
+    env.ALLOWED_ORIGIN,
+    env.DRIVE_FOLDER_ID,
+    env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY,
+  ].every((value) => typeof value === "string" && value.length > 0);
+}
+
+function validDriveId(value) {
+  return typeof value === "string" && /^[A-Za-z0-9_-]+$/.test(value);
+}
+
+function privateKeyBytes(value) {
+  const encodedKey = value
+    .replaceAll("\\n", "\n")
+    .replace(/-----BEGIN PRIVATE KEY-----|-----END PRIVATE KEY-----|\s/g, "");
+  return Uint8Array.from(atob(encodedKey), (character) => character.charCodeAt(0));
+}
+
+function safeFileName(value) {
+  const name = value.replaceAll(/[^a-zA-Z0-9._-]/g, "_").replace(/^\.+/, "");
+  return name || "download";
+}
+
+function fileNameForExport(name, extension) {
+  const safeName = safeFileName(name);
+  return safeName.toLowerCase().endsWith(extension) ? safeName : `${safeName}${extension}`;
 }
 
 async function hmacKey(secret) {
@@ -91,25 +146,150 @@ async function verifySession(request, env) {
 }
 
 async function matchesSecret(value, secret) {
+  if (typeof secret !== "string") return false;
+
   const submitted = await crypto.subtle.digest("SHA-256", encoder.encode(value));
   const expected = await crypto.subtle.digest("SHA-256", encoder.encode(secret));
   const submittedBytes = new Uint8Array(submitted);
   const expectedBytes = new Uint8Array(expected);
   let difference = submittedBytes.length ^ expectedBytes.length;
 
-  for (let index = 0; index < Math.min(submittedBytes.length, expectedBytes.length); index += 1) {
+  for (let index = 0; index < submittedBytes.length; index += 1) {
     difference |= submittedBytes[index] ^ expectedBytes[index];
   }
   return difference === 0;
 }
 
-function fileNameFromPath(path) {
-  return path.split("/").pop().replaceAll(/[^a-zA-Z0-9._-]/g, "_");
+async function googleAccessToken(env) {
+  if (
+    googleTokenCache?.email === env.GOOGLE_SERVICE_ACCOUNT_EMAIL &&
+    googleTokenCache.expiresAt > Date.now() + 60_000
+  ) {
+    return googleTokenCache.token;
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+  const header = base64Url(encoder.encode(JSON.stringify({ alg: "RS256", typ: "JWT" })));
+  const claims = base64Url(
+    encoder.encode(
+      JSON.stringify({
+        iss: env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+        scope: driveScope,
+        aud: googleTokenUrl,
+        iat: now,
+        exp: now + 60 * 60,
+      })
+    )
+  );
+  const signedContent = `${header}.${claims}`;
+  const key = await crypto.subtle.importKey(
+    "pkcs8",
+    privateKeyBytes(env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY),
+    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signature = await crypto.subtle.sign(
+    "RSASSA-PKCS1-v1_5",
+    key,
+    encoder.encode(signedContent)
+  );
+  const assertion = `${signedContent}.${base64Url(new Uint8Array(signature))}`;
+  const response = await fetch(googleTokenUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+      assertion,
+    }),
+  });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok || typeof payload?.access_token !== "string") {
+    throw new Error("Google token request failed.");
+  }
+
+  googleTokenCache = {
+    email: env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    token: payload.access_token,
+    expiresAt: Date.now() + Math.max(60, Number(payload.expires_in) || 3600) * 1000,
+  };
+  return googleTokenCache.token;
 }
 
-function safeObjectKey(path) {
-  if (!path || path.includes("..") || path.startsWith("/")) return null;
-  return path;
+async function driveFetch(env, url) {
+  return fetch(url, {
+    headers: { Authorization: `Bearer ${await googleAccessToken(env)}` },
+  });
+}
+
+async function listFiles(env) {
+  const url = new URL(`${driveApiBase}/files`);
+  url.searchParams.set(
+    "q",
+    `'${env.DRIVE_FOLDER_ID}' in parents and trashed = false and mimeType != 'application/vnd.google-apps.folder'`
+  );
+  url.searchParams.set("fields", "files(id,name,size,createdTime,modifiedTime,mimeType)");
+  url.searchParams.set("orderBy", "modifiedTime desc");
+  url.searchParams.set("pageSize", "1000");
+  url.searchParams.set("supportsAllDrives", "true");
+  url.searchParams.set("includeItemsFromAllDrives", "true");
+
+  const response = await driveFetch(env, url);
+  if (!response.ok) throw new Error("Google Drive list request failed.");
+
+  const payload = await response.json();
+  return Array.isArray(payload.files)
+    ? payload.files.map((file) => ({
+        id: file.id,
+        name: file.name,
+        size: Number(file.size) || 0,
+        uploaded: file.modifiedTime || file.createdTime,
+        mimeType: file.mimeType,
+      }))
+    : [];
+}
+
+async function fileMetadata(env, fileId) {
+  const url = new URL(`${driveApiBase}/files/${encodeURIComponent(fileId)}`);
+  url.searchParams.set("fields", "id,name,size,mimeType,parents");
+  url.searchParams.set("supportsAllDrives", "true");
+
+  const response = await driveFetch(env, url);
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error("Google Drive metadata request failed.");
+
+  const metadata = await response.json();
+  return metadata.parents?.includes(env.DRIVE_FOLDER_ID) ? metadata : null;
+}
+
+async function downloadFile(env, metadata) {
+  const exportFormat = googleWorkspaceExports[metadata.mimeType];
+  if (metadata.mimeType?.startsWith("application/vnd.google-apps.") && !exportFormat) {
+    return { unsupported: true };
+  }
+
+  const url = new URL(
+    exportFormat
+      ? `${driveApiBase}/files/${encodeURIComponent(metadata.id)}/export`
+      : `${driveApiBase}/files/${encodeURIComponent(metadata.id)}`
+  );
+  if (exportFormat) {
+    url.searchParams.set("mimeType", exportFormat.mimeType);
+  } else {
+    url.searchParams.set("alt", "media");
+  }
+  url.searchParams.set("supportsAllDrives", "true");
+
+  const response = await driveFetch(env, url);
+  if (!response.ok || !response.body) throw new Error("Google Drive download request failed.");
+
+  return {
+    body: response.body,
+    contentType: exportFormat?.mimeType || metadata.mimeType || "application/octet-stream",
+    name: exportFormat
+      ? fileNameForExport(metadata.name, exportFormat.extension)
+      : safeFileName(metadata.name),
+  };
 }
 
 export default {
@@ -119,6 +299,10 @@ export default {
 
     if (request.method === "OPTIONS") {
       return new Response(null, { headers: cors });
+    }
+
+    if (!configurationReady(env) || !validDriveId(env.DRIVE_FOLDER_ID)) {
+      return json({ error: "Private access is not configured yet." }, 503, cors);
     }
 
     if (url.pathname === "/api/session" && request.method === "POST") {
@@ -162,39 +346,36 @@ export default {
       return json({ error: "Sign-in required." }, 401, cors);
     }
 
-    if (url.pathname === "/api/files" && request.method === "GET") {
-      const objects = await env.PORTFOLIO_FILES.list({ limit: 100 });
-      return json(
-        {
-          files: objects.objects.map((object) => ({
-            name: object.key,
-            size: object.size,
-            uploaded: object.uploaded.toISOString(),
-          })),
-        },
-        200,
-        cors
-      );
-    }
+    try {
+      if (url.pathname === "/api/files" && request.method === "GET") {
+        return json({ files: await listFiles(env) }, 200, cors);
+      }
 
-    if (url.pathname.startsWith("/api/download/") && request.method === "GET") {
-      const key = safeObjectKey(
-        decodeURIComponent(url.pathname.slice("/api/download/".length))
-      );
-      if (!key) return json({ error: "Invalid file name." }, 400, cors);
+      if (url.pathname.startsWith("/api/download/") && request.method === "GET") {
+        const fileId = decodeURIComponent(url.pathname.slice("/api/download/".length));
+        if (!validDriveId(fileId)) return json({ error: "Invalid file." }, 400, cors);
 
-      const object = await env.PORTFOLIO_FILES.get(key);
-      if (!object) return json({ error: "File not found." }, 404, cors);
+        const metadata = await fileMetadata(env, fileId);
+        if (!metadata) return json({ error: "File not found." }, 404, cors);
 
-      return new Response(object.body, {
-        headers: {
-          ...cors,
-          "Cache-Control": "private, no-store",
-          "Content-Disposition": `attachment; filename="${fileNameFromPath(key)}"`,
-          "Content-Length": String(object.size),
-          "Content-Type": object.httpMetadata?.contentType || "application/octet-stream",
-        },
-      });
+        const file = await downloadFile(env, metadata);
+        if (file.unsupported) {
+          return json({ error: "This Google Workspace file type cannot be downloaded." }, 415, cors);
+        }
+
+        return new Response(file.body, {
+          headers: {
+            ...cors,
+            "Cache-Control": "private, no-store",
+            "Content-Disposition": `attachment; filename="${file.name}"`,
+            "Content-Type": file.contentType,
+            "X-Content-Type-Options": "nosniff",
+          },
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      return json({ error: "Private files are temporarily unavailable." }, 502, cors);
     }
 
     return json({ error: "Not found." }, 404, cors);
