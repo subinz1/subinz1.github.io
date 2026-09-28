@@ -101,6 +101,49 @@ function showToast(message) {
   toastTimeout = window.setTimeout(() => toast.classList.remove("is-visible"), 4200);
 }
 
+const shareProfile = document.querySelector("[data-share-profile]");
+shareProfile.addEventListener("click", async () => {
+  const shareData = {
+    title: document.title,
+    text: "Subin George — ML systems, CI reliability, and open-source infrastructure",
+    url: window.location.href,
+  };
+
+  try {
+    if (navigator.share) {
+      await navigator.share(shareData);
+      showToast("Thanks for sharing.");
+    } else {
+      await navigator.clipboard.writeText(shareData.url);
+      showToast("Portfolio link copied.");
+    }
+  } catch (error) {
+    if (error.name !== "AbortError") showToast("Unable to share the portfolio link.");
+  }
+});
+
+const signalPanel = document.querySelector(".signal-panel");
+const signalReplay = document.querySelector("[data-signal-replay]");
+let signalReplayTimers = [];
+function replaySignalTrace() {
+  signalReplayTimers.forEach((timer) => window.clearTimeout(timer));
+  signalReplayTimers = [];
+  signalPanel.classList.remove("is-replaying");
+  signalPanel.querySelectorAll("[data-signal-step]").forEach((step) => step.classList.remove("is-active"));
+  void signalPanel.offsetWidth;
+  signalPanel.classList.add("is-replaying");
+
+  signalPanel.querySelectorAll("[data-signal-step]").forEach((step, index) => {
+    signalReplayTimers.push(window.setTimeout(() => step.classList.add("is-active"), index * 360));
+  });
+  signalReplayTimers.push(window.setTimeout(() => {
+    signalPanel.classList.remove("is-replaying");
+    signalPanel.querySelectorAll("[data-signal-step]").forEach((step) => step.classList.remove("is-active"));
+  }, 2400));
+}
+
+signalReplay.addEventListener("click", replaySignalTrace);
+
 const contactForm = document.querySelector("[data-contact-form]");
 const contactSubmit = document.querySelector("[data-contact-submit]");
 contactForm.addEventListener("submit", async (event) => {
