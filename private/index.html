@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#0a1020" />
+    <link rel="icon" href="../assets/subin-mark.svg" type="image/svg+xml" />
+    <title>Private workspace — Subin George</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="../auth-config.js" defer></script>
+    <script src="private.js" defer></script>
+  </head>
+  <body class="account-page">
+    <main class="account-shell">
+      <header class="account-header">
+        <a class="brand" href="../" aria-label="Subin George home">
+          <img class="brand-mark" src="../assets/subin-mark.svg" alt="" width="32" height="32" />
+          <span class="brand-word">SUBIN</span><span class="brand-slash">/</span>
+        </a>
+        <div class="account-header__actions">
+          <button class="account-back account-logout" type="button" data-logout>Sign out</button>
+          <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">
+            <span aria-hidden="true">◐</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="private-workspace" aria-labelledby="workspace-title">
+        <div>
+          <p class="eyebrow">Private workspace</p>
+          <h1 id="workspace-title">Files with their context intact.</h1>
+          <p>
+            Downloadable material is served only after your session is verified.
+            Nothing in this area is published with the public portfolio.
+          </p>
+        </div>
+        <div class="file-panel">
+          <div class="file-panel__heading">
+            <span>Available files</span>
+            <span data-file-count>—</span>
+          </div>
+          <p class="file-status" data-file-status aria-live="polite">Loading private files…</p>
+          <ul class="private-file-list" data-private-files></ul>
+        </div>
+      </section>
+
+      <footer class="account-footer">
+        <span>Private session / expires automatically</span>
+        <a href="../">Public portfolio <span aria-hidden="true">↖</span></a>
+      </footer>
+    </main>
+  </body>
+</html>

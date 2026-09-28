@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Private collaboration access for Subin George's portfolio."
+    />
+    <meta name="theme-color" content="#0a1020" />
+    <link rel="icon" href="../assets/subin-mark.svg" type="image/svg+xml" />
+    <title>Account access — Subin George</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="../auth-config.js" defer></script>
+    <script src="login.js" defer></script>
+  </head>
+  <body class="account-page">
+    <main class="account-shell">
+      <header class="account-header">
+        <a class="brand" href="../" aria-label="Subin George home">
+          <img class="brand-mark" src="../assets/subin-mark.svg" alt="" width="32" height="32" />
+          <span class="brand-word">SUBIN</span><span class="brand-slash">/</span>
+        </a>
+        <div class="account-header__actions">
+          <a class="account-back" href="../">Public portfolio <span aria-hidden="true">↖</span></a>
+          <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">
+            <span aria-hidden="true">◐</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="account-grid">
+        <section class="account-intro">
+          <p class="eyebrow">Account access / invite only</p>
+          <h1>Start with the work that brought you here.</h1>
+          <p>
+            The public portfolio is open to everyone. Private collaboration spaces
+            will be available here when there is a shared project, review, or handoff
+            to continue.
+          </p>
+          <ol class="access-steps">
+            <li><span>01</span><div><strong>Verify identity</strong><small>Use a trusted provider, not a portfolio password.</small></div></li>
+            <li><span>02</span><div><strong>Confirm access</strong><small>Access is specific to the collaboration.</small></div></li>
+            <li><span>03</span><div><strong>Continue the work</strong><small>Review material stays with its context.</small></div></li>
+          </ol>
+        </section>
+
+        <section class="login-card" aria-labelledby="login-title">
+          <div class="login-card__mark" aria-hidden="true">SG</div>
+          <p class="eyebrow">Private workspace</p>
+          <h2 id="login-title">Sign in to continue.</h2>
+          <p>
+            Access is limited to the site owner. Your sign-in is verified by the
+            private access service and is never embedded in this website.
+          </p>
+          <form class="access-form" data-login-form>
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" autocomplete="username" required />
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required />
+            <p class="login-note" data-login-status aria-live="polite">Public work never requires an account.</p>
+            <button class="button button-primary" type="submit" data-login-submit>Sign in <span aria-hidden="true">↗</span></button>
+          </form>
+        </section>
+      </div>
+
+      <footer class="account-footer">
+        <span>Public by default. Private only with context.</span>
+        <a href="../#contact">Contact <span aria-hidden="true">↗</span></a>
+      </footer>
+    </main>
+  </body>
+</html>
