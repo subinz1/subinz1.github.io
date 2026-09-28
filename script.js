@@ -30,6 +30,16 @@ window.addEventListener("scroll", () => header.classList.toggle("is-scrolled", w
 
 const revealTargets = document.querySelectorAll("[data-reveal]");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const cursorGlow = document.querySelector("[data-cursor-glow]");
+if (cursorGlow && !reducedMotion.matches && window.matchMedia("(hover: hover)").matches) {
+  window.addEventListener("pointermove", (event) => {
+    cursorGlow.style.setProperty("--cursor-x", `${event.clientX}px`);
+    cursorGlow.style.setProperty("--cursor-y", `${event.clientY}px`);
+    cursorGlow.classList.add("is-visible");
+  }, { passive: true });
+  window.addEventListener("blur", () => cursorGlow.classList.remove("is-visible"));
+}
+
 if ("IntersectionObserver" in window && !reducedMotion.matches) {
   root.classList.add("reveal-ready");
   const revealObserver = new IntersectionObserver((entries) => {
