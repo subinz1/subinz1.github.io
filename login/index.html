@@ -12,6 +12,7 @@
     <title>Account access — Subin George</title>
     <link rel="stylesheet" href="../styles.css" />
     <script src="../auth-config.js" defer></script>
+    <script src="https://accounts.google.com/gsi/client" defer></script>
     <script src="login.js" defer></script>
   </head>
   <body class="account-page">
@@ -50,22 +51,20 @@
           <p class="eyebrow">Private workspace</p>
           <h2 id="login-title">Sign in to continue.</h2>
           <p>
-            Access is limited to the site owner. Your sign-in is verified by the
-            private access service and is never embedded in this website.
+            Access is limited to the site owner. Google verifies identity and
+            authorizes access to the restricted Drive folder directly.
           </p>
-          <form class="access-form" data-login-form>
-            <label for="username">Username</label>
-            <input id="username" name="username" type="text" autocomplete="username" required />
-            <label for="password">Password</label>
-            <input id="password" name="password" type="password" autocomplete="current-password" required />
+          <div class="access-form">
             <p class="login-note" data-login-status aria-live="polite">Public work never requires an account.</p>
-            <button class="button button-primary" type="submit" data-login-submit>Sign in <span aria-hidden="true">↗</span></button>
-          </form>
+            <button class="button button-primary" type="button" data-google-login>
+              Continue with Google <span aria-hidden="true">↗</span>
+            </button>
+          </div>
         </section>
       </div>
 
       <footer class="account-footer">
-        <span>Public by default. Private only with context.</span>
+        <span>Public by default. Private through your Google account.</span>
         <a href="../#contact">Contact <span aria-hidden="true">↗</span></a>
       </footer>
     </main>
