@@ -3,6 +3,7 @@ const storedTheme = localStorage.getItem("theme");
 const prefersLight = window.matchMedia("(prefers-color-scheme: light)");
 const auth = window.PORTFOLIO_AUTH || {};
 const driveApiBase = "https://www.googleapis.com/drive/v3";
+const folderMimeType = "application/vnd.google-apps.folder";
 const googleWorkspaceExports = {
   "application/vnd.google-apps.document": {
     extension: ".pdf",
@@ -22,6 +23,9 @@ const googleWorkspaceExports = {
 const fileList = document.querySelector("[data-private-files]");
 const fileStatus = document.querySelector("[data-file-status]");
 const fileCount = document.querySelector("[data-file-count]");
+const folderTitle = document.querySelector("[data-current-folder]");
+const folderNav = document.querySelector("[data-folder-nav]");
+let folderPath = [];
 
 function setTheme(theme) {
   root.dataset.theme = theme;
@@ -44,6 +48,10 @@ function configured() {
 
 function approvedEmail() {
   return auth.allowedEmail.trim().toLowerCase();
+}
+
+function currentFolder() {
+  return folderPath.at(-1);
 }
 
 function signOut() {
@@ -69,6 +77,10 @@ function fileNameForExport(name, extension) {
   return safeName.toLowerCase().endsWith(extension) ? safeName : `${safeName}${extension}`;
 }
 
+function formatUpdated(value) {
+  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(new Date(value));
+}
+
 async function driveFetch(url) {
   const response = await fetch(url, {
     headers: { Authorization: `Bearer ${accessToken()}` },
@@ -80,44 +92,89 @@ async function driveFetch(url) {
   return response;
 }
 
-function renderFiles(files) {
-  fileList.replaceChildren();
-  fileCount.textContent = String(files.length);
+function renderNavigation() {
+  folderNav.replaceChildren();
+  if (folderPath.length > 1) {
+    const up = document.createElement("button");
+    up.type = "button";
+    up.textContent = "← Up";
+    up.addEventListener("click", () => {
+      folderPath = folderPath.slice(0, -1);
+      loadFolder();
+    });
+    folderNav.append(up);
 
-  if (files.length === 0) {
-    fileStatus.textContent = "No private files have been added yet.";
+    const separator = document.createElement("span");
+    separator.className = "file-browser__separator";
+    separator.textContent = "/";
+    folderNav.append(separator);
+  }
+
+  folderPath.forEach((folder, index) => {
+    if (index > 0) {
+      const separator = document.createElement("span");
+      separator.className = "file-browser__separator";
+      separator.textContent = "/";
+      folderNav.append(separator);
+    }
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = folder.name;
+    button.disabled = index === folderPath.length - 1;
+    button.addEventListener("click", () => {
+      folderPath = folderPath.slice(0, index + 1);
+      loadFolder();
+    });
+    folderNav.append(button);
+  });
+}
+
+function renderItems(items) {
+  fileList.replaceChildren();
+  fileCount.textContent = String(items.length);
+  folderTitle.textContent = currentFolder().name;
+  renderNavigation();
+
+  if (items.length === 0) {
+    fileStatus.textContent = "This folder is empty.";
     return;
   }
 
   fileStatus.textContent = "";
-  files.forEach((file) => {
-    const item = document.createElement("li");
+  items.forEach((item) => {
+    const isFolder = item.mimeType === folderMimeType;
+    const row = document.createElement("li");
     const details = document.createElement("div");
     const name = document.createElement("strong");
     const meta = document.createElement("small");
     const button = document.createElement("button");
 
-    name.textContent = file.name;
-    meta.textContent = `${formatBytes(file.size)} · updated ${new Intl.DateTimeFormat(undefined, {
-      dateStyle: "medium",
-    }).format(new Date(file.uploaded))}`;
+    name.textContent = item.name;
+    meta.textContent = isFolder
+      ? `Folder · updated ${formatUpdated(item.updated)}`
+      : `${formatBytes(item.size)} · updated ${formatUpdated(item.updated)}`;
     button.className = "button button-quiet";
     button.type = "button";
-    button.textContent = "Download ↘";
-    button.addEventListener("click", () => downloadFile(file, button));
+    button.textContent = isFolder ? "Open folder →" : "Download ↘";
+    button.addEventListener("click", () => {
+      if (isFolder) {
+        folderPath = [...folderPath, { id: item.id, name: item.name }];
+        loadFolder();
+        return;
+      }
+      downloadFile(item, button);
+    });
 
     details.append(name, meta);
-    item.append(details, button);
-    fileList.append(item);
+    row.append(details, button);
+    fileList.append(row);
   });
 }
 
-async function listFiles() {
+async function listFolder(folderId) {
   const url = new URL(`${driveApiBase}/files`);
-  url.searchParams.set(
-    "q",
-    `'${auth.driveFolderId}' in parents and trashed = false and mimeType != 'application/vnd.google-apps.folder'`
-  );
+  url.searchParams.set("q", `'${folderId}' in parents and trashed = false`);
   url.searchParams.set("fields", "files(id,name,size,createdTime,modifiedTime,mimeType)");
   url.searchParams.set("orderBy", "modifiedTime desc");
   url.searchParams.set("pageSize", "1000");
@@ -127,15 +184,22 @@ async function listFiles() {
   const response = await driveFetch(url);
   const payload = await response.json().catch(() => null);
   if (!response.ok || !Array.isArray(payload?.files)) {
-    throw new Error("Google Drive could not load the private folder.");
+    throw new Error("Google Drive could not load this folder.");
   }
-  return payload.files.map((file) => ({
-    id: file.id,
-    name: file.name,
-    size: Number(file.size) || 0,
-    uploaded: file.modifiedTime || file.createdTime,
-    mimeType: file.mimeType,
-  }));
+  return payload.files
+    .map((item) => ({
+      id: item.id,
+      name: item.name,
+      size: Number(item.size) || 0,
+      updated: item.modifiedTime || item.createdTime,
+      mimeType: item.mimeType,
+    }))
+    .sort((first, second) => {
+      const firstIsFolder = first.mimeType === folderMimeType;
+      const secondIsFolder = second.mimeType === folderMimeType;
+      if (firstIsFolder !== secondIsFolder) return firstIsFolder ? -1 : 1;
+      return first.name.localeCompare(second.name);
+    });
 }
 
 async function fileMetadata(fileId) {
@@ -145,8 +209,8 @@ async function fileMetadata(fileId) {
 
   const response = await driveFetch(url);
   const metadata = await response.json().catch(() => null);
-  if (!response.ok || !metadata?.parents?.includes(auth.driveFolderId)) {
-    throw new Error("The file is no longer available in the private folder.");
+  if (!response.ok || !metadata?.parents?.includes(currentFolder().id)) {
+    throw new Error("The file is no longer available in this folder.");
   }
   return metadata;
 }
@@ -196,7 +260,22 @@ async function downloadFile(file, button) {
   }
 }
 
-async function loadFiles() {
+async function loadFolder() {
+  fileStatus.textContent = "Loading…";
+  fileList.replaceChildren();
+  fileCount.textContent = "—";
+  folderTitle.textContent = currentFolder().name;
+  renderNavigation();
+
+  try {
+    renderItems(await listFolder(currentFolder().id));
+  } catch (error) {
+    fileStatus.textContent =
+      error instanceof Error ? error.message : "Unable to load this folder.";
+  }
+}
+
+function initializeWorkspace() {
   if (!configured()) {
     fileStatus.textContent = "Google access is not configured yet.";
     return;
@@ -210,12 +289,8 @@ async function loadFiles() {
     return;
   }
 
-  try {
-    renderFiles(await listFiles());
-  } catch (error) {
-    fileStatus.textContent =
-      error instanceof Error ? error.message : "Unable to load private files.";
-  }
+  folderPath = [{ id: auth.driveFolderId, name: "Portfolio Private Files" }];
+  loadFolder();
 }
 
 setTheme(storedTheme || (prefersLight.matches ? "light" : "dark"));
@@ -223,4 +298,4 @@ document.querySelector(".theme-toggle").addEventListener("click", () => {
   setTheme(root.dataset.theme === "dark" ? "light" : "dark");
 });
 document.querySelector("[data-logout]").addEventListener("click", signOut);
-loadFiles();
+initializeWorkspace();

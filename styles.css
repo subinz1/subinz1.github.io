@@ -169,6 +169,11 @@ h1 em { color: var(--accent); font-family: ui-serif, Georgia, serif; font-weight
 .private-workspace > div > p:not(.eyebrow) { color: var(--muted); line-height: 1.72; max-width: 33rem; }
 .file-panel { background: var(--surface); border: 1px solid var(--line); border-radius: 1rem; box-shadow: 0 24px 70px rgba(0, 0, 0, .16); min-height: 22rem; padding: clamp(1.25rem, 3vw, 2rem); }
 .file-panel__heading { align-items: center; border-bottom: 1px solid var(--line); color: var(--subtle); display: flex; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .7rem; justify-content: space-between; letter-spacing: .05em; padding-bottom: .9rem; text-transform: uppercase; }
+.file-browser__nav { align-items: center; display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .9rem; }
+.file-browser__nav button { background: transparent; border: 0; color: var(--accent); cursor: pointer; font: inherit; padding: 0; }
+.file-browser__nav button:hover { text-decoration: underline; }
+.file-browser__nav button[disabled] { color: var(--subtle); cursor: default; text-decoration: none; }
+.file-browser__separator { color: var(--subtle); font-size: .8rem; }
 .file-status { color: var(--muted); font-size: .9rem; line-height: 1.6; margin: 2rem 0; }
 .private-file-list { display: grid; gap: .7rem; list-style: none; margin: 1rem 0 0; padding: 0; }
 .private-file-list li { align-items: center; border: 1px solid var(--line); border-radius: .6rem; display: flex; gap: 1rem; justify-content: space-between; padding: .85rem; }
