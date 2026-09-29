@@ -180,6 +180,11 @@ h1 em { color: var(--accent); font-family: ui-serif, Georgia, serif; font-weight
 .private-file-list strong { display: block; font-size: .9rem; overflow-wrap: anywhere; }
 .private-file-list small { color: var(--subtle); display: block; font-size: .72rem; margin-top: .25rem; }
 .private-file-list .button { flex: 0 0 auto; font-size: .66rem; padding: .65rem .75rem; }
+.private-file-actions { display: flex; flex: 0 0 auto; flex-wrap: wrap; gap: .45rem; justify-content: flex-end; }
+.pdf-preview { border-top: 1px solid var(--line); margin-top: 1.25rem; padding-top: 1.25rem; }
+.pdf-preview__heading { align-items: center; display: flex; font-size: .8rem; font-weight: 700; gap: 1rem; justify-content: space-between; margin-bottom: .8rem; }
+.pdf-preview__heading .button { font-size: .66rem; padding: .55rem .7rem; }
+.pdf-preview iframe { background: #fff; border: 1px solid var(--line); border-radius: .55rem; display: block; height: min(58vh, 42rem); width: 100%; }
 .account-logout { background: transparent; border: 0; color: var(--muted); padding: 0; }
 .account-logout:hover { color: var(--accent); }
 
@@ -188,4 +193,5 @@ h1 em { color: var(--accent); font-family: ui-serif, Georgia, serif; font-weight
   .file-panel { margin-top: 2rem; }
   .private-file-list li { align-items: stretch; flex-direction: column; }
   .private-file-list .button { width: 100%; }
+  .private-file-actions { justify-content: stretch; }
 }

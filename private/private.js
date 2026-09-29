@@ -25,7 +25,11 @@ const fileStatus = document.querySelector("[data-file-status]");
 const fileCount = document.querySelector("[data-file-count]");
 const folderTitle = document.querySelector("[data-current-folder]");
 const folderNav = document.querySelector("[data-folder-nav]");
+const pdfPreview = document.querySelector("[data-pdf-preview]");
+const pdfTitle = document.querySelector("[data-pdf-title]");
+const pdfFrame = document.querySelector("[data-pdf-frame]");
 let folderPath = [];
+let previewObjectUrl;
 
 function setTheme(theme) {
   root.dataset.theme = theme;
@@ -75,6 +79,17 @@ function safeFileName(value) {
 function fileNameForExport(name, extension) {
   const safeName = safeFileName(name);
   return safeName.toLowerCase().endsWith(extension) ? safeName : `${safeName}${extension}`;
+}
+
+function previewable(file) {
+  return file.mimeType === "application/pdf";
+}
+
+function closePreview() {
+  if (previewObjectUrl) URL.revokeObjectURL(previewObjectUrl);
+  previewObjectUrl = undefined;
+  pdfFrame.removeAttribute("src");
+  pdfPreview.hidden = true;
 }
 
 function formatUpdated(value) {
@@ -148,26 +163,38 @@ function renderItems(items) {
     const details = document.createElement("div");
     const name = document.createElement("strong");
     const meta = document.createElement("small");
-    const button = document.createElement("button");
+    const actions = document.createElement("div");
+    const download = document.createElement("button");
 
     name.textContent = item.name;
     meta.textContent = isFolder
       ? `Folder · updated ${formatUpdated(item.updated)}`
       : `${formatBytes(item.size)} · updated ${formatUpdated(item.updated)}`;
-    button.className = "button button-quiet";
-    button.type = "button";
-    button.textContent = isFolder ? "Open folder →" : "Download ↘";
-    button.addEventListener("click", () => {
+    actions.className = "private-file-actions";
+    download.className = "button button-quiet";
+    download.type = "button";
+    download.textContent = isFolder ? "Open folder →" : "Download ↘";
+    download.addEventListener("click", () => {
       if (isFolder) {
         folderPath = [...folderPath, { id: item.id, name: item.name }];
         loadFolder();
         return;
       }
-      downloadFile(item, button);
+      downloadFile(item, download);
     });
 
+    if (!isFolder && previewable(item)) {
+      const preview = document.createElement("button");
+      preview.className = "button button-quiet";
+      preview.type = "button";
+      preview.textContent = "Preview";
+      preview.addEventListener("click", () => previewPdf(item, preview));
+      actions.append(preview);
+    }
+
     details.append(name, meta);
-    row.append(details, button);
+    actions.append(download);
+    row.append(details, actions);
     fileList.append(row);
   });
 }
@@ -215,6 +242,54 @@ async function fileMetadata(fileId) {
   return metadata;
 }
 
+async function fileResponse(metadata) {
+  const exportFormat = googleWorkspaceExports[metadata.mimeType];
+  if (metadata.mimeType?.startsWith("application/vnd.google-apps.") && !exportFormat) {
+    throw new Error("This Google Workspace file type cannot be downloaded.");
+  }
+
+  const url = new URL(
+    exportFormat
+      ? `${driveApiBase}/files/${encodeURIComponent(metadata.id)}/export`
+      : `${driveApiBase}/files/${encodeURIComponent(metadata.id)}`
+  );
+  if (exportFormat) {
+    url.searchParams.set("mimeType", exportFormat.mimeType);
+  } else {
+    url.searchParams.set("alt", "media");
+  }
+  url.searchParams.set("supportsAllDrives", "true");
+
+  const response = await driveFetch(url);
+  if (!response.ok) throw new Error("The file is no longer available.");
+  return { exportFormat, response };
+}
+
+async function previewPdf(file, button) {
+  button.disabled = true;
+  const originalLabel = button.textContent;
+  button.textContent = "Loading…";
+
+  try {
+    const metadata = await fileMetadata(file.id);
+    if (!previewable(metadata)) throw new Error("Only PDF files can be previewed.");
+
+    const { response } = await fileResponse(metadata);
+    closePreview();
+    previewObjectUrl = URL.createObjectURL(await response.blob());
+    pdfTitle.textContent = metadata.name;
+    pdfFrame.src = previewObjectUrl;
+    pdfPreview.hidden = false;
+    pdfPreview.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  } catch (error) {
+    fileStatus.textContent =
+      error instanceof Error ? error.message : "Unable to preview this PDF.";
+  } finally {
+    button.disabled = false;
+    button.textContent = originalLabel;
+  }
+}
+
 async function downloadFile(file, button) {
   button.disabled = true;
   const originalLabel = button.textContent;
@@ -222,25 +297,7 @@ async function downloadFile(file, button) {
 
   try {
     const metadata = await fileMetadata(file.id);
-    const exportFormat = googleWorkspaceExports[metadata.mimeType];
-    if (metadata.mimeType?.startsWith("application/vnd.google-apps.") && !exportFormat) {
-      throw new Error("This Google Workspace file type cannot be downloaded.");
-    }
-
-    const url = new URL(
-      exportFormat
-        ? `${driveApiBase}/files/${encodeURIComponent(metadata.id)}/export`
-        : `${driveApiBase}/files/${encodeURIComponent(metadata.id)}`
-    );
-    if (exportFormat) {
-      url.searchParams.set("mimeType", exportFormat.mimeType);
-    } else {
-      url.searchParams.set("alt", "media");
-    }
-    url.searchParams.set("supportsAllDrives", "true");
-
-    const response = await driveFetch(url);
-    if (!response.ok) throw new Error("The file is no longer available.");
+    const { exportFormat, response } = await fileResponse(metadata);
 
     const blob = await response.blob();
     const objectUrl = URL.createObjectURL(blob);
@@ -261,6 +318,7 @@ async function downloadFile(file, button) {
 }
 
 async function loadFolder() {
+  closePreview();
   fileStatus.textContent = "Loading…";
   fileList.replaceChildren();
   fileCount.textContent = "—";
@@ -298,4 +356,6 @@ document.querySelector(".theme-toggle").addEventListener("click", () => {
   setTheme(root.dataset.theme === "dark" ? "light" : "dark");
 });
 document.querySelector("[data-logout]").addEventListener("click", signOut);
+document.querySelector("[data-pdf-close]").addEventListener("click", closePreview);
+window.addEventListener("pagehide", closePreview);
 initializeWorkspace();

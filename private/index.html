@@ -43,6 +43,13 @@
           <nav class="file-browser__nav" aria-label="Private folder path" data-folder-nav></nav>
           <p class="file-status" data-file-status aria-live="polite">Loading private files…</p>
           <ul class="private-file-list" data-private-files></ul>
+          <section class="pdf-preview" data-pdf-preview hidden aria-labelledby="pdf-preview-title">
+            <div class="pdf-preview__heading">
+              <span id="pdf-preview-title" data-pdf-title>PDF preview</span>
+              <button class="button button-quiet" type="button" data-pdf-close>Close</button>
+            </div>
+            <iframe data-pdf-frame title="Private PDF preview"></iframe>
+          </section>
         </div>
       </section>
 
