@@ -45,13 +45,9 @@ function accessExpired() {
 }
 
 function configured() {
-  return [auth.googleClientId, auth.driveFolderId, auth.allowedEmail].every(
+  return [auth.googleClientId, auth.driveFolderId].every(
     (value) => typeof value === "string" && value.length > 0
   );
-}
-
-function approvedEmail() {
-  return auth.allowedEmail.trim().toLowerCase();
 }
 
 function currentFolder() {
@@ -61,7 +57,7 @@ function currentFolder() {
 function signOut() {
   sessionStorage.removeItem("portfolio-google-access-token");
   sessionStorage.removeItem("portfolio-google-access-expires-at");
-  sessionStorage.removeItem("portfolio-google-email");
+  sessionStorage.removeItem("portfolio-google-identity-verified");
   window.location.assign("../login/");
 }
 
@@ -342,7 +338,7 @@ function initializeWorkspace() {
     signOut();
     return;
   }
-  if (sessionStorage.getItem("portfolio-google-email") !== approvedEmail()) {
+  if (sessionStorage.getItem("portfolio-google-identity-verified") !== "true") {
     signOut();
     return;
   }

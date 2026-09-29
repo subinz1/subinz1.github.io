@@ -13,13 +13,9 @@ function setTheme(theme) {
 }
 
 function configured() {
-  return [auth.googleClientId, auth.driveFolderId, auth.allowedEmail].every(
+  return [auth.googleClientId, auth.driveFolderId].every(
     (value) => typeof value === "string" && value.length > 0
   );
-}
-
-function approvedEmail() {
-  return auth.allowedEmail.trim().toLowerCase();
 }
 
 function setStatus(message) {
@@ -29,7 +25,7 @@ function setStatus(message) {
 function signOut() {
   sessionStorage.removeItem("portfolio-google-access-token");
   sessionStorage.removeItem("portfolio-google-access-expires-at");
-  sessionStorage.removeItem("portfolio-google-email");
+  sessionStorage.removeItem("portfolio-google-identity-verified");
 }
 
 async function signedInUser(accessToken) {
@@ -56,9 +52,9 @@ async function handleToken(response) {
 
   try {
     const profile = await signedInUser(response.access_token);
-    if (profile.email.toLowerCase() !== approvedEmail() || !profile.email_verified) {
+    if (!profile.email_verified) {
       revoke(response.access_token);
-      throw new Error("This Google account is not approved for private access.");
+      throw new Error("Google could not verify this account.");
     }
 
     sessionStorage.setItem("portfolio-google-access-token", response.access_token);
@@ -66,7 +62,7 @@ async function handleToken(response) {
       "portfolio-google-access-expires-at",
       String(Date.now() + Number(response.expires_in || 0) * 1000)
     );
-    sessionStorage.setItem("portfolio-google-email", approvedEmail());
+    sessionStorage.setItem("portfolio-google-identity-verified", "true");
     window.location.assign("../private/");
   } catch (error) {
     setStatus(error instanceof Error ? error.message : "Unable to verify Google access.");
@@ -85,7 +81,7 @@ function startGoogleSignIn() {
   }
 
   signInButton.disabled = true;
-  setStatus("Choose the approved Google account to continue…");
+  setStatus("Choose a Google account to continue…");
   const tokenClient = window.google.accounts.oauth2.initTokenClient({
     client_id: auth.googleClientId,
     scope: requiredScope,
@@ -95,10 +91,7 @@ function startGoogleSignIn() {
       signInButton.disabled = false;
     },
   });
-  tokenClient.requestAccessToken({
-    login_hint: auth.allowedEmail,
-    prompt: "select_account consent",
-  });
+  tokenClient.requestAccessToken({ prompt: "select_account consent" });
 }
 
 setTheme(storedTheme || (prefersLight.matches ? "light" : "dark"));
