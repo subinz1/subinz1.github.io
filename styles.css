@@ -248,8 +248,8 @@ h1 em { color: var(--accent); font-family: ui-serif, Georgia, serif; font-weight
 .field-note-card { background: var(--surface); border: 1px solid var(--line); border-radius: .8rem; display: flex; flex-direction: column; min-height: 19rem; overflow: hidden; padding: 1.4rem; position: relative; transition: border-color .25s, box-shadow .25s, transform .25s; }
 .field-note-card::after { background: radial-gradient(circle at var(--pointer-x, 50%) var(--pointer-y, 50%), color-mix(in srgb, var(--accent) 18%, transparent), transparent 46%); content: ""; inset: 0; opacity: 0; pointer-events: none; position: absolute; transition: opacity .2s; }
 .field-note-card > * { position: relative; z-index: 1; }
-.field-note-card:hover { border-color: color-mix(in srgb, var(--accent) 60%, var(--line)); box-shadow: 0 18px 40px rgba(0, 0, 0, .14); transform: translateY(-4px); }
-.field-note-card:hover::after { opacity: 1; }
+.field-note-card:hover, .field-note-card:focus-visible { border-color: color-mix(in srgb, var(--accent) 60%, var(--line)); box-shadow: 0 18px 40px rgba(0, 0, 0, .14); outline: none; transform: translateY(-4px); }
+.field-note-card:hover::after, .field-note-card:focus-visible::after { opacity: 1; }
 .field-note-meta { color: var(--subtle); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .68rem; letter-spacing: .04em; margin: 0; text-transform: uppercase; }
 .field-note-card h3 { font-size: clamp(1.45rem, 2.4vw, 2.1rem); letter-spacing: -.055em; line-height: 1.04; margin: auto 0 .8rem; max-width: 15ch; }
 .field-note-card p:not(.field-note-meta) { color: var(--muted); line-height: 1.6; }
