@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A practical field note on profiling, tuning, and operating PyTorch workloads on ROCm across FP8, MoE, collectives, and recovery."
+    />
+    <meta name="author" content="Subin George Malana" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0a1020" />
+    <link rel="canonical" href="https://subinz1.github.io/rocm-performance-workloads/" />
+    <link rel="icon" href="../assets/subin-mark.svg" type="image/svg+xml" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://subinz1.github.io/rocm-performance-workloads/" />
+    <meta property="og:title" content="Performance is a systems property: PyTorch workloads on ROCm" />
+    <meta
+      property="og:description"
+      content="A practical field note on how workload shape, kernels, memory, communication, and recovery determine PyTorch performance on ROCm."
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Performance is a systems property: PyTorch workloads on ROCm" />
+    <meta
+      name="twitter:description"
+      content="A practical field note on how workload shape, kernels, memory, communication, and recovery determine PyTorch performance on ROCm."
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Performance is a systems property: reading PyTorch workloads on ROCm",
+        "description": "A practical field note on profiling, tuning, and operating PyTorch workloads on ROCm across FP8, MoE, collectives, and recovery.",
+        "author": {
+          "@type": "Person",
+          "name": "Subin George Malana",
+          "alternateName": "Subin George",
+          "url": "https://subinz1.github.io/"
+        },
+        "mainEntityOfPage": "https://subinz1.github.io/rocm-performance-workloads/",
+        "about": ["PyTorch", "ROCm", "AMD GPUs", "Machine learning infrastructure", "Distributed training"]
+      }
+    </script>
+    <title>Performance is a systems property: PyTorch workloads on ROCm</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="../rhel-ci-enablement/article.js" defer></script>
+  </head>
+  <body class="article-page">
+    <a class="skip-link" href="#article">Skip to article</a>
+    <div class="page-glow glow-one" aria-hidden="true"></div>
+    <div class="page-glow glow-two" aria-hidden="true"></div>
+
+    <header class="site-header" data-header>
+      <a class="brand" href="../" aria-label="Subin George home">
+        <img class="brand-mark" src="../assets/subin-mark.svg" alt="" width="32" height="32" />
+        <span class="brand-word">SUBIN</span><span class="brand-slash">/</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="sr-only">Open navigation</span><span></span><span></span>
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="Article navigation">
+        <a href="../#work">Portfolio</a>
+        <a href="../#field-notes">Field notes</a>
+        <a href="https://pytorch.org/" target="_blank" rel="noreferrer">PyTorch</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">
+        <span aria-hidden="true">◐</span>
+      </button>
+    </header>
+
+    <main id="article">
+      <header class="article-hero article-shell">
+        <p class="eyebrow">Field note / PyTorch performance</p>
+        <p class="article-context">ROCm · TorchTitan · distributed training</p>
+        <h1>Performance is a systems property.</h1>
+        <p class="article-lede">
+          Recent PyTorch work on ROCm shows why an AI workload cannot be reduced to a GEMM
+          benchmark. Useful performance comes from matching precision, kernels, memory traffic,
+          collective communication, and recovery behaviour to the workload that actually runs.
+        </p>
+        <div class="article-byline">
+          <span>By Subin George Malana</span>
+          <span aria-hidden="true">•</span>
+          <span>For ML infrastructure engineers and performance practitioners</span>
+        </div>
+        <ul class="tag-list article-tags" aria-label="Topics">
+          <li>PyTorch</li><li>ROCm</li><li>FP8</li><li>MoE</li><li>Distributed training</li>
+        </ul>
+      </header>
+
+      <section class="article-layout article-shell" aria-label="Article content">
+        <aside class="article-aside">
+          <p class="eyebrow">In this note</p>
+          <nav aria-label="On this page">
+            <a href="#workload">Choose the bottleneck</a>
+            <a href="#moe">Look beyond the GEMM</a>
+            <a href="#correctness">Protect correctness</a>
+            <a href="#profile">Profile the right layer</a>
+            <a href="#network">Design for the network</a>
+            <a href="#recovery">Make recovery performance</a>
+            <a href="#plan">Run a durable plan</a>
+            <a href="#sources">Sources</a>
+          </nav>
+        </aside>
+
+        <article class="article-prose">
+          <p class="article-intro">
+            Performance work on ROCm is no longer just about getting a model to run on an AMD GPU.
+            The useful question is more specific: which part of this workload is limiting progress?
+            For one job it is matrix-multiply throughput; for another it is a chain of small kernels
+            moving intermediate tensors through HBM. For an MoE model it may be token routing and
+            All-to-All communication. At scale, it may be whether a node failure discards useful work.
+          </p>
+
+          <section id="workload">
+            <p class="eyebrow">01 / Let the workload choose the bottleneck</p>
+            <h2>Dense and sparse models need different performance stories.</h2>
+            <p>
+              Dense transformers and sparse Mixture-of-Experts models can both use FP8, but they
+              do not accelerate for the same reasons. In a dense transformer, large GEMMs are often
+              the primary opportunity. The upstream TorchAO and TorchTitan FP8 study reports a
+              13.4% throughput gain over BF16 for Llama 3 8B on eight MI300X GPUs, using
+              <code>torch.compile</code>, FSDP2, and selective activation checkpointing. Peak memory
+              remained near 39 GB, so the reported win was faster FP8 matrix-core execution—not
+              simply making room for a larger model.
+            </p>
+            <p>
+              MoE changes the shape of the problem. A router sends each token to only a few experts,
+              creating irregular and often small expert batches. The system must now contend with
+              micro-GEMMs that may not saturate a GPU, tokens moving to remote expert owners, and
+              idle bubbles where FSDP, pipeline, tensor, and expert parallelism do not line up.
+            </p>
+            <div class="article-pullquote">
+              <p>A workload is performant only when its math, memory, network, compiler, and operating model agree on the bottleneck.</p>
+            </div>
+            <p>
+              The 1,024-GPU TorchTitan MoE study makes that interaction concrete. Its DeepSeek-V3
+              and Llama 4 experiments pair FSDP, pipeline parallelism, and expert parallelism with
+              ROCm-tuned kernels. The authors report a 2.77× end-to-end improvement for DeepSeek-V3
+              671B from kernel-level optimization and 96% scaling efficiency from 128 to 1,024
+              MI325X GPUs in their measured environment. Those numbers are engineering evidence,
+              not universal platform promises: the study used 400 Gb/s RoCE v2 and a full-bisection
+              fat-tree topology. Change the model, fabric, routing distribution, or software revision
+              and the bottleneck can move.
+            </p>
+          </section>
+
+          <section id="moe">
+            <p class="eyebrow">02 / Look beyond the GEMM</p>
+            <h2>Most of an MoE win can live in the work surrounding arithmetic.</h2>
+            <p>
+              The most useful result from the FP8 work is that quantization overhead can dominate
+              the supposedly faster low-precision path. Before optimization, a DeepSeek-V3-shaped
+              workflow computed scales, applied them, clamped values, and cast data in separate
+              kernels. Each stage wrote an intermediate value to HBM before the next one read it
+              back. Across many experts, the surrounding launches and movement cost more than the
+              8-bit arithmetic they were meant to prepare.
+            </p>
+            <ol class="article-steps">
+              <li><strong>Eliminate redundant layout work.</strong><span>Removing an unnecessary transpose and copy before GEMM produced a 4.2× backward-pass improvement on the studied DeepSeek-MoE-16B shape.</span></li>
+              <li><strong>Fuse the preparation path.</strong><span>Fusing scale-and-cast operations into Triton kernels recovered 89% of FP8 overhead and delivered a reported 17% end-to-end gain for the measured DeepSeek-V3 671B case.</span></li>
+              <li><strong>Write data cooperatively.</strong><span>Using local data share to transpose before storage improved the per-MoE-layer scale kernel by 6.2× on the reported DeepSeek-V3 shapes.</span></li>
+              <li><strong>Autotune with a hypothesis.</strong><span>Expanding a Triton search space for Llama 4 shapes on MI300X did not yield a measurable gain and increased first-iteration compilation time.</span></li>
+            </ol>
+            <p>
+              The practical rule is simple: before tuning a GEMM, inspect how much data is being
+              moved to prepare for it. A trace with a small computation surrounded by scale, cast,
+              copy, and synchronization kernels is an invitation to fuse or remove work—not merely
+              to add more arithmetic tuning.
+            </p>
+            <p>
+              Recent PyTorch releases extend this work beyond FP8. PyTorch 2.12 added expandable
+              ROCm allocator segments, rocSHMEM support for symmetric-memory collective operations,
+              and ROCm improvements to FlexAttention. PyTorch 2.14 adds ROCm grouped-GEMM lowering,
+              Composable Kernel templates under JIT compilation, and an analytical tile-size selector
+              for ROCm max-autotune. Together, these features help irregular expert work avoid an
+              inefficient loop of isolated BLAS calls.
+            </p>
+          </section>
+
+          <section id="correctness">
+            <p class="eyebrow">03 / Protect correctness</p>
+            <h2>Performance figures are only useful when the training result is trustworthy.</h2>
+            <p>
+              FP8 exposes a failure mode that ordinary throughput charts can hide. AMD Instinct uses
+              an FNUZ FP8 variant whose range differs from a format initially assumed in parts of the
+              training stack. Selecting the wrong maximum value silently clipped activations and
+              corrupted gradients without producing a NaN signal. The upstream solution was platform
+              detection, the appropriate dtype and scale selection, accurate MFU reporting, and
+              hardware-appropriate loss baselines—not a single performance flag.
+            </p>
+            <p>
+              That is the discipline worth keeping for any PyTorch workload: measure tokens per
+              second, latency, memory, and compile time while validating loss, numerical parity, and
+              convergence. Save the exact GPU, ROCm, PyTorch, compiler, model, sequence length,
+              batch shape, and parallelism configuration with every result. A faster run that changes
+              model quality is not a faster training system.
+            </p>
+          </section>
+
+          <section id="profile">
+            <p class="eyebrow">04 / Profile the right layer</p>
+            <h2>Start from the workload, then descend to the kernel.</h2>
+            <p>
+              A model operation can look slow because its kernel is slow, because data was not ready,
+              because a collective held the stream, or because the host waited to launch the next unit
+              of work. ROCm's documentation supports a layered investigation rather than beginning
+              with a long list of low-level counters.
+            </p>
+            <ol class="article-steps">
+              <li><strong>Trace the application first.</strong><span>Use PyTorch Profiler or ROCm tracing to locate long kernels, memory copies, GPU idle time, and host-side gaps.</span></li>
+              <li><strong>Attribute framework work to kernels.</strong><span>ROCm Compute Profiler's experimental <code>--torch-trace</code> mode connects PyTorch operations, GPU kernels, and counters.</span></li>
+              <li><strong>Collect counters to test a hypothesis.</strong><span>After locating a hot kernel, select occupancy, cache, memory-traffic, or instruction counters that answer one specific question.</span></li>
+              <li><strong>Measure communication independently.</strong><span>A clean kernel trace does not prove that a distributed step is healthy; inspect its critical collective and overlap as well.</span></li>
+            </ol>
+            <pre class="article-code"><code>rocprof-compute profile --experimental --torch-trace \
+  --name workload -- python train.py</code></pre>
+            <p>
+              That command is a diagnostic tool, not a benchmark harness. Instrumentation changes
+              timing, and ROCm describes this tracing mode as experimental. Coverage also depends
+              on the supported PyTorch version: newer integrations provide fuller operator traces,
+              while older ones can omit backward-pass operations created in child threads. Keep a
+              non-instrumented steady-state measurement beside the trace, and record the installed
+              PyTorch and ROCm package combination before comparing results.
+            </p>
+          </section>
+
+          <section id="network">
+            <p class="eyebrow">05 / Design for the network</p>
+            <h2>The collective library and topology are part of the model architecture.</h2>
+            <p>
+              At multi-GPU scale, it is not enough for an AllReduce or All-to-All to work. The
+              process layout, memory mode, network, and library version must let the collective
+              overlap useful work. RCCL is ROCm's communication library for multi-GPU and multi-node
+              collectives across AMD GPU paths such as PCIe and xGMI; its guidance is deliberately
+              version- and hardware-aware.
+            </p>
+            <p>
+              In the TorchTitan study, increasing the expert-parallel degree caused baseline
+              communication share to grow and tokens per second to fall. The DeepEP communication
+              path kept communication to a substantially smaller portion of the step for that
+              cluster and model configuration. This does not mean a library alone solves MoE. It
+              shows that token routing, expert placement, network bandwidth, and communication
+              scheduling must be designed together.
+            </p>
+            <p>
+              One RCCL usage-tips example reports roughly 315 GB/s for an optimized single-OAM MI300X
+              AllReduce configuration versus roughly 170 GB/s for its default configuration. That is
+              a useful diagnostic reference, not an application-throughput promise: topology,
+              collective size, software version, and configuration all matter. The safest approach
+              is to test a prospective setting against the real message sizes, number of ranks, and
+              fabric used in production—and retain the baseline that proves it helped.
+            </p>
+          </section>
+
+          <section id="recovery">
+            <p class="eyebrow">06 / Make recovery performance</p>
+            <h2>Useful throughput includes the time saved after a failure.</h2>
+            <p>
+              At hundreds of GPUs, a memory error, failed node, or network partition is an operating
+              condition, not an exceptional thought experiment. The Monarch-on-ROCm work connects
+              performance to this reality by combining a single-controller runtime, RCCL, RDMA,
+              TorchTitan, and TorchFT across SLURM, Kubernetes, and SkyPilot.
+            </p>
+            <p>
+              When an actor fails, a supervision tree isolates it, healthy replicas keep progressing,
+              the failed unit is restarted, and a peer can provide the state needed to rejoin at a
+              quorum boundary. The published validation includes fault injection on a 16-node MI300
+              cluster and a 32-node MI355 Kubernetes cluster. The reported loss curves continued to
+              converge while workers recovered rather than requiring a full-job restart. A system
+              that spends less time idle after a fault delivers more useful training even when its
+              nominal kernel benchmark is unchanged.
+            </p>
+          </section>
+
+          <section id="plan">
+            <p class="eyebrow">07 / Run a durable plan</p>
+            <h2>Make performance evidence survive contact with production.</h2>
+            <ol class="article-steps">
+              <li><strong>Describe the workload.</strong><span>Record the model family, precision, sequence-length distribution, batch shape, GPU topology, interconnect, and parallelism plan. Keep dense, attention-heavy, and MoE paths distinct.</span></li>
+              <li><strong>Establish a reproducible baseline.</strong><span>Measure eager and compiled runs using the same inputs. Capture steady-state throughput, first-iteration compile cost, peak memory, and a correctness signal.</span></li>
+              <li><strong>Profile by category.</strong><span>Break time into GEMM, attention, quantization, allocator activity, host waits, collectives, and communication-compute overlap.</span></li>
+              <li><strong>Apply the smallest fitting lever.</strong><span>Fuse quantization work, reduce HBM round-trips, use grouped GEMM for MoE, tune communication overlap, or address fragmentation only when the trace supports it.</span></li>
+              <li><strong>Test representative shapes.</strong><span>A single maximum-throughput shape can hide decode latency, dynamic batches, skewed routing, long-context attention, and different collective sizes.</span></li>
+              <li><strong>Keep the evidence.</strong><span>Save the trace, recipe, environment, and pass/fail threshold alongside the change. Otherwise the next ROCm, PyTorch, or cluster upgrade turns the investigation back into guesswork.</span></li>
+            </ol>
+            <p>
+              This is also a useful CI boundary. Correctness CI should protect builds, APIs,
+              numerical behaviour, and representative small workloads. Performance regression
+              tracking needs controlled hardware, pinned configurations, warm-up rules, and
+              noise-aware thresholds. Mixing the two into one undifferentiated pass makes both
+              signals less trustworthy.
+            </p>
+          </section>
+
+          <section id="sources" class="article-callout" aria-labelledby="sources-title">
+            <p class="eyebrow">Sources and further reading</p>
+            <h2 id="sources-title">Use the original measurements and versioned guidance.</h2>
+            <p>
+              The findings above are intentionally scoped to the models, hardware, and software
+              versions in the source material. Use the official PyTorch studies for their benchmark
+              conditions and ROCm documentation for the current hardware- and release-specific
+              operating guidance.
+            </p>
+            <div class="project-links">
+              <a class="text-link" href="https://pytorch.org/blog/fp8-training-on-amd-gpus-with-torchtitan-and-torchao-upstreaming-performance-improvements/" target="_blank" rel="noreferrer">Read the PyTorch FP8 study <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="https://pytorch.org/blog/efficient-moe-pre-training-at-scale-with-torchtitan/" target="_blank" rel="noreferrer">Read the TorchTitan MoE study <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="https://rocm.docs.amd.com/projects/rccl/en/docs-7.14.1/how-to/rccl-usage-tips.html" target="_blank" rel="noreferrer">Read RCCL usage tips <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="https://rocm.docs.amd.com/projects/rocprofiler-compute/en/develop/how-to/profile/mode.html" target="_blank" rel="noreferrer">Read ROCm Compute Profiler guidance <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="https://pytorch.org/blog/bringing-pytorch-monarch-to-amd-gpus-single-controller-distributed-training-on-rocm/" target="_blank" rel="noreferrer">Read the Monarch ROCm study <span aria-hidden="true">↗</span></a>
+            </div>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="article-footer article-shell">
+      <span>PyTorch workloads on ROCm · field note</span>
+      <a href="../#field-notes">Back to field notes <span aria-hidden="true">↖</span></a>
+    </footer>
+  </body>
+</html>
