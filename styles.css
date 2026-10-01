@@ -188,6 +188,52 @@ h1 em { color: var(--accent); font-family: ui-serif, Georgia, serif; font-weight
 .account-logout { background: transparent; border: 0; color: var(--muted); padding: 0; }
 .account-logout:hover { color: var(--accent); }
 
+/* Public field notes */
+.article-page { min-height: 100vh; }
+.article-shell { margin-inline: auto; max-width: 75rem; padding-inline: 1.5rem; }
+.article-hero { border-bottom: 1px solid var(--line); padding-bottom: clamp(3rem, 7vw, 6rem); padding-top: calc(var(--header-height) + clamp(4rem, 9vw, 8rem)); }
+.article-context, .article-byline { color: var(--subtle); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; }
+.article-context { margin-bottom: 1.2rem; }
+.article-hero h1 { font-size: clamp(3.4rem, 7.4vw, 7.4rem); margin-bottom: 1.6rem; max-width: 10.5ch; }
+.article-lede { color: var(--muted); font-size: clamp(1.1rem, 1.7vw, 1.38rem); line-height: 1.7; margin-bottom: 1.75rem; max-width: 45rem; }
+.article-byline { align-items: center; display: flex; flex-wrap: wrap; gap: .55rem; }
+.article-tags { margin-top: 1.5rem; }
+.article-layout { display: grid; gap: clamp(2rem, 6vw, 6rem); grid-template-columns: minmax(11rem, .38fr) minmax(0, 1fr); padding-bottom: clamp(4rem, 9vw, 8rem); padding-top: clamp(3rem, 7vw, 6rem); }
+.article-aside { align-self: start; border-top: 1px solid var(--line); display: grid; gap: .8rem; padding-top: 1rem; position: sticky; top: calc(var(--header-height) + 1.5rem); }
+.article-aside .eyebrow { margin-bottom: 0; }
+.article-aside nav { display: grid; gap: .7rem; }
+.article-aside a { color: var(--muted); font-size: .88rem; line-height: 1.4; }
+.article-aside a:hover { color: var(--accent); }
+.article-prose { max-width: 48rem; }
+.article-intro { color: var(--ink); font-size: clamp(1.22rem, 2vw, 1.55rem); line-height: 1.65; margin-bottom: 4rem; }
+.article-prose section + section { border-top: 1px solid var(--line); margin-top: 4.25rem; padding-top: 4.25rem; }
+.article-prose h2 { font-size: clamp(2rem, 4vw, 3.7rem); letter-spacing: -.06em; line-height: 1; margin-bottom: 1.35rem; max-width: 13ch; }
+.article-prose p:not(.eyebrow) { color: var(--muted); font-size: 1.06rem; line-height: 1.8; }
+.article-prose .eyebrow { margin-bottom: 1.1rem; }
+.article-pullquote { border-left: 2px solid var(--accent); margin: 2.2rem 0; padding: .2rem 0 .2rem 1.4rem; }
+.article-pullquote p { color: var(--ink) !important; font-family: ui-serif, Georgia, serif; font-size: clamp(1.55rem, 3vw, 2.35rem) !important; line-height: 1.2 !important; margin: 0; max-width: 21ch; }
+.article-steps { display: grid; gap: 0; list-style: none; margin: 2.3rem 0 0; padding: 0; }
+.article-steps li { border-top: 1px solid var(--line); display: grid; gap: 1rem; grid-template-columns: minmax(11rem, .75fr) 1.25fr; padding: 1.2rem 0; }
+.article-steps li:last-child { border-bottom: 1px solid var(--line); }
+.article-steps strong { color: var(--ink); font-size: .95rem; }
+.article-steps span { color: var(--muted); font-size: .93rem; line-height: 1.55; }
+.article-callout { background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 16%, var(--surface-solid)), var(--surface)); border: 1px solid color-mix(in srgb, var(--accent) 42%, var(--line)); border-radius: 1rem; margin-top: 4.25rem; padding: clamp(1.5rem, 4vw, 3rem); }
+.article-prose .article-callout h2 { font-size: clamp(1.8rem, 3.5vw, 3rem); max-width: 14ch; }
+.article-callout .button { margin-top: .8rem; }
+.article-footer { align-items: center; border-top: 1px solid var(--line); color: var(--subtle); display: flex; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .7rem; justify-content: space-between; letter-spacing: .04em; padding-bottom: 2rem; padding-top: 2rem; text-transform: uppercase; }
+.article-footer a { color: var(--accent); font-weight: 800; }
+
+@media (max-width: 760px) {
+  .article-shell { padding-inline: 1rem; }
+  .article-hero { padding-top: calc(var(--header-height) + 4rem); }
+  .article-layout { display: block; padding-bottom: 5rem; padding-top: 3rem; }
+  .article-aside { margin-bottom: 3.5rem; position: static; }
+  .article-aside nav { grid-template-columns: 1fr 1fr; }
+  .article-prose section + section { margin-top: 3.25rem; padding-top: 3.25rem; }
+  .article-steps li { grid-template-columns: 1fr; }
+  .article-footer { align-items: flex-start; flex-direction: column; gap: 1rem; }
+}
+
 @media (max-width: 760px) {
   .private-workspace { display: block; padding-block: 3rem; }
   .file-panel { margin-top: 2rem; }

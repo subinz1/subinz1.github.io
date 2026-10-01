@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A user-focused look at RHEL CI Enablement for PyTorch: using CRCR to make nightly compatibility on RHEL visible, traceable, and easier to act on."
+    />
+    <meta name="author" content="Subin George Malana" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0a1020" />
+    <link rel="canonical" href="https://subinz1.github.io/rhel-ci-enablement/" />
+    <link rel="icon" href="../assets/subin-mark.svg" type="image/svg+xml" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://subinz1.github.io/rhel-ci-enablement/" />
+    <meta property="og:title" content="RHEL CI Enablement for PyTorch — a CRCR field note" />
+    <meta
+      property="og:description"
+      content="What RHEL CI Enablement through CRCR means for people who build, package, and run PyTorch."
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="RHEL CI Enablement for PyTorch — a CRCR field note" />
+    <meta
+      name="twitter:description"
+      content="A user-focused view of making PyTorch compatibility on RHEL easier to see and act on."
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "RHEL CI Enablement for PyTorch: a CRCR field note",
+        "description": "A user-focused look at RHEL CI Enablement for PyTorch and its CRCR integration.",
+        "author": {
+          "@type": "Person",
+          "name": "Subin George Malana",
+          "alternateName": "Subin George",
+          "url": "https://subinz1.github.io/"
+        },
+        "mainEntityOfPage": "https://subinz1.github.io/rhel-ci-enablement/",
+        "about": ["PyTorch", "Red Hat Enterprise Linux", "Continuous integration", "CRCR"]
+      }
+    </script>
+    <title>RHEL CI Enablement for PyTorch — a CRCR field note</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="article.js" defer></script>
+  </head>
+  <body class="article-page">
+    <a class="skip-link" href="#article">Skip to article</a>
+    <div class="page-glow glow-one" aria-hidden="true"></div>
+    <div class="page-glow glow-two" aria-hidden="true"></div>
+
+    <header class="site-header" data-header>
+      <a class="brand" href="../" aria-label="Subin George home">
+        <img class="brand-mark" src="../assets/subin-mark.svg" alt="" width="32" height="32" />
+        <span class="brand-word">SUBIN</span><span class="brand-slash">/</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="sr-only">Open navigation</span><span></span><span></span>
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="Article navigation">
+        <a href="../#work">Portfolio</a>
+        <a href="https://hud.pytorch.org/crcr" target="_blank" rel="noreferrer">CRCR HUD</a>
+        <a href="https://github.com/TorchedHat/pytorch-redhat-ci" target="_blank" rel="noreferrer">Repository</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">
+        <span aria-hidden="true">◐</span>
+      </button>
+    </header>
+
+    <main id="article">
+      <header class="article-hero article-shell">
+        <p class="eyebrow">Field note / RHEL CI Enablement</p>
+        <p class="article-context">PyTorch ecosystem · downstream compatibility · CRCR</p>
+        <h1>Make RHEL compatibility a signal people can use.</h1>
+        <p class="article-lede">
+          PyTorch changes quickly. RHEL CI Enablement uses the Cross-Repository CI Relay (CRCR)
+          to turn the question “does this still work on RHEL?” into a visible, traceable answer
+          for the people building, packaging, and using PyTorch.
+        </p>
+        <div class="article-byline">
+          <span>By Subin George Malana</span>
+          <span aria-hidden="true">•</span>
+          <span>For PyTorch users and infrastructure enthusiasts</span>
+        </div>
+        <ul class="tag-list article-tags" aria-label="Topics">
+          <li>PyTorch</li><li>RHEL 9</li><li>CRCR</li><li>CI reliability</li>
+        </ul>
+      </header>
+
+      <section class="article-layout article-shell" aria-label="Article content">
+        <aside class="article-aside">
+          <p class="eyebrow">In this note</p>
+          <nav aria-label="On this page">
+            <a href="#why">Why this matters</a>
+            <a href="#experience">The user experience</a>
+            <a href="#path">The CRCR path</a>
+            <a href="#success">What success looks like</a>
+          </nav>
+        </aside>
+
+        <article class="article-prose">
+          <p class="article-intro">
+            For someone who relies on PyTorch on RHEL, compatibility is not an abstract status.
+            It determines whether a fresh upstream change can move into a container, a package,
+            a development environment, or a production workload without becoming a long debugging
+            session. The goal of this work is to shorten the distance between an upstream change
+            and a useful answer on RHEL.
+          </p>
+
+          <section id="why">
+            <p class="eyebrow">01 / Why this matters</p>
+            <h2>Users should not be the first compatibility test.</h2>
+            <p>
+              A nightly build is an early opportunity to learn whether PyTorch and a RHEL
+              environment continue to work together. Without a dependable feedback loop, a
+              compatibility problem may only become visible when somebody tries a new wheel,
+              upgrades a container, or begins a larger validation effort.
+            </p>
+            <p>
+              RHEL CI Enablement is meant to move that discovery earlier. It builds and tests
+              PyTorch on RHEL 9, follows upstream nightly changes, and reports the outcome as a
+              concrete signal rather than an isolated downstream log.
+            </p>
+          </section>
+
+          <section id="experience">
+            <p class="eyebrow">02 / The user experience</p>
+            <h2>From “something may have changed” to a place to start.</h2>
+            <p>
+              The useful outcome is not merely a green or red badge. A contributor, package
+              maintainer, or platform engineer should be able to see which upstream revision was
+              exercised, whether the RHEL build and tests completed, and where to continue when
+              they did not.
+            </p>
+            <div class="article-pullquote">
+              <p>Compatibility information is most valuable when it arrives while a change is still easy to understand.</p>
+            </div>
+            <p>
+              That makes the CI signal part of the development conversation. It gives enthusiasts
+              trying a nightly a clearer expectation, gives maintainers evidence for a regression,
+              and gives downstream teams a repeatable way to participate in the PyTorch ecosystem.
+            </p>
+          </section>
+
+          <section id="path">
+            <p class="eyebrow">03 / The CRCR path</p>
+            <h2>A small, trustworthy route from upstream change to downstream evidence.</h2>
+            <p>
+              CRCR connects an upstream PyTorch event to participating downstream CI without
+              treating a downstream result as untrusted text. The RHEL CI repository receives the
+              relevant work, builds and tests it in its own environment, and reports the result
+              back through an authenticated callback path. The PyTorch CI HUD then makes that
+              result visible alongside the rest of the compatibility picture.
+            </p>
+            <ol class="article-steps">
+              <li><strong>Start with an upstream revision.</strong><span>A PyTorch nightly provides a specific point to validate.</span></li>
+              <li><strong>Exercise the RHEL path.</strong><span>RHEL CI builds and tests the revision in a repeatable environment.</span></li>
+              <li><strong>Return evidence, not just a verdict.</strong><span>CRCR carries the result back so the HUD can link a state to its run and revision.</span></li>
+              <li><strong>Make the next action obvious.</strong><span>When something fails, the signal should lead to the relevant job and investigation context.</span></li>
+            </ol>
+          </section>
+
+          <section id="success">
+            <p class="eyebrow">04 / What success looks like</p>
+            <h2>Reliable nightlies that make the ecosystem easier to explore.</h2>
+            <p>
+              Success is a RHEL compatibility signal that is regular enough to trust, specific
+              enough to diagnose, and visible enough to guide a decision. It helps users try new
+              PyTorch changes with more context and helps maintainers identify where an upstream
+              change and a downstream environment need attention.
+            </p>
+            <p>
+              The work is deliberately practical: targeted test selection, container publishing,
+              nightly validation, and clear reporting. Each part exists to make the next PyTorch
+              upgrade on RHEL less surprising.
+            </p>
+          </section>
+
+          <section class="article-callout" aria-labelledby="repository-title">
+            <p class="eyebrow">Follow or contribute</p>
+            <h2 id="repository-title">See the RHEL CI Enablement work in the open.</h2>
+            <p>
+              The repository contains the workflows and implementation details behind the RHEL
+              build, test, and CRCR reporting path.
+            </p>
+            <a class="button button-primary" href="https://github.com/TorchedHat/pytorch-redhat-ci" target="_blank" rel="noreferrer">
+              Open the RHEL CI Enablement repository <span aria-hidden="true">↗</span>
+            </a>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="article-footer article-shell">
+      <span>RHEL CI Enablement · CRCR field note</span>
+      <a href="../#work">Back to selected work <span aria-hidden="true">↖</span></a>
+    </footer>
+  </body>
+</html>
