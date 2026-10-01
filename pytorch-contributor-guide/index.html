@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A practical guide for new upstream PyTorch contributors: choose a scope, navigate the tree, test generated cases, triage CI, and collaborate through review."
+    />
+    <meta name="author" content="Subin George Malana" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0a1020" />
+    <link rel="canonical" href="https://subinz1.github.io/pytorch-contributor-guide/" />
+    <link rel="icon" href="../assets/subin-mark.svg" type="image/svg+xml" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://subinz1.github.io/pytorch-contributor-guide/" />
+    <meta property="og:title" content="Contributing upstream to PyTorch: from first issue to trusted change" />
+    <meta
+      property="og:description"
+      content="A practical, evidence-driven path for new PyTorch contributors: scope, tests, CI, review, and the habits that make a change easy to trust."
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Contributing upstream to PyTorch: from first issue to trusted change" />
+    <meta
+      name="twitter:description"
+      content="A practical, evidence-driven path for new PyTorch contributors: scope, tests, CI, review, and the habits that make a change easy to trust."
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Contributing upstream to PyTorch: a path from first issue to trusted change",
+        "description": "A practical, evidence-driven guide for new PyTorch contributors: choosing scope, navigating the tree, testing generated cases, triaging CI, and collaborating through review.",
+        "author": {
+          "@type": "Person",
+          "name": "Subin George Malana",
+          "alternateName": "Subin George",
+          "url": "https://subinz1.github.io/"
+        },
+        "mainEntityOfPage": "https://subinz1.github.io/pytorch-contributor-guide/",
+        "about": ["PyTorch", "Open source", "Continuous integration", "Software testing", "Code review"]
+      }
+    </script>
+    <title>Contributing upstream to PyTorch: from first issue to trusted change</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="../rhel-ci-enablement/article.js" defer></script>
+  </head>
+  <body class="article-page">
+    <a class="skip-link" href="#article">Skip to article</a>
+    <div class="page-glow glow-one" aria-hidden="true"></div>
+    <div class="page-glow glow-two" aria-hidden="true"></div>
+
+    <header class="site-header" data-header>
+      <a class="brand" href="../" aria-label="Subin George home">
+        <img class="brand-mark" src="../assets/subin-mark.svg" alt="" width="32" height="32" />
+        <span class="brand-word">SUBIN</span><span class="brand-slash">/</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="sr-only">Open navigation</span><span></span><span></span>
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="Article navigation">
+        <a href="../#work">Portfolio</a>
+        <a href="../#field-notes">Field notes</a>
+        <a href="https://github.com/pytorch/pytorch" target="_blank" rel="noreferrer">PyTorch</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">
+        <span aria-hidden="true">◐</span>
+      </button>
+    </header>
+
+    <main id="article">
+      <header class="article-hero article-shell">
+        <p class="eyebrow">Field note / upstream contribution</p>
+        <p class="article-context">PyTorch · testing · CI · code review</p>
+        <h1>Contribute upstream with evidence, not guesswork.</h1>
+        <p class="article-lede">
+          A practical path for new PyTorch contributors—from choosing a small problem to
+          validating generated tests, reading CI failures, and giving reviewers the evidence
+          they need to trust a change.
+        </p>
+        <div class="article-byline">
+          <span>By Subin George</span>
+          <span aria-hidden="true">•</span>
+          <span>For new and returning PyTorch contributors</span>
+        </div>
+        <ul class="tag-list article-tags" aria-label="Topics">
+          <li>PyTorch</li><li>Open source</li><li>Testing</li><li>CI</li><li>Code review</li>
+        </ul>
+      </header>
+
+      <section class="article-layout article-shell" aria-label="Article content">
+        <aside class="article-aside">
+          <p class="eyebrow">In this guide</p>
+          <nav aria-label="On this page">
+            <a href="#scope">Choose a finishable scope</a>
+            <a href="#tree">Read the tree</a>
+            <a href="#environment">Set up the right environment</a>
+            <a href="#tests">Understand generated tests</a>
+            <a href="#validation">Validate narrowly</a>
+            <a href="#pr">Build an evidence bundle</a>
+            <a href="#ci">Triage CI</a>
+            <a href="#review">Collaborate through review</a>
+            <a href="#checklist">Checklist and sources</a>
+          </nav>
+        </aside>
+
+        <article class="article-prose">
+          <p class="article-intro">
+            The first difficult part of contributing to PyTorch is not opening a pull request. It is
+            turning a useful observation into a small change a maintainer can understand, test,
+            review, and safely merge. PyTorch's scale can feel intimidating, but it offers a durable
+            method: make the problem precise, follow local conventions, validate the narrowest
+            relevant behaviour, and leave behind evidence another person can inspect.
+          </p>
+
+          <section id="scope">
+            <p class="eyebrow">01 / Choose a finishable scope</p>
+            <h2>Start with a problem shape that can reach a useful conclusion.</h2>
+            <p>
+              The best early contribution is usually bounded. It has observable behaviour, a
+              plausible owner, and a way to prove the outcome. Documentation corrections, focused
+              bug fixes, test coverage, and well-triaged regressions are all valuable starts. The
+              PyTorch <a href="https://github.com/pytorch/pytorch/contribute" target="_blank" rel="noreferrer">contribution page</a>
+              lists current good-first issues; labels also provide useful clues about the module and
+              the team that owns it.
+            </p>
+            <ol class="article-steps">
+              <li><strong>Describe what happens today.</strong><span>Capture the current behaviour with the relevant version, platform, device, dtype, model shape, or error message.</span></li>
+              <li><strong>State the expectation.</strong><span>Explain the user- or developer-visible behaviour that should change before proposing a mechanism.</span></li>
+              <li><strong>Find the narrowest owner.</strong><span>A Python API, native operator, compiler path, distributed component, documentation page, or test helper each has a different validation and review path.</span></li>
+              <li><strong>Define the proof.</strong><span>A failing test, minimal reproduction, before-and-after result, or documentation rendering check is the beginning of acceptance criteria.</span></li>
+            </ol>
+            <p>
+              For a non-trivial change, find or open an issue before writing a large patch. Scope can
+              be corrected much more cheaply there. A useful issue includes the smallest reproduction,
+              observed and expected behaviour, environment details, and evidence that the behaviour is
+              a regression. If a change affects an API, compatibility, or a major design, pause for
+              maintainer direction instead of starting with a large implementation.
+            </p>
+            <div class="article-pullquote">
+              <p>A good first contribution is not the smallest diff. It is the smallest change with a clear problem, an appropriate test, and a reviewable explanation.</p>
+            </div>
+          </section>
+
+          <section id="tree">
+            <p class="eyebrow">02 / Read the tree</p>
+            <h2>Let the source layout tell you what kind of change you are making.</h2>
+            <p>
+              Before changing a nearby line, find a recent change in the same subsystem, read its
+              test, and follow the call path one or two layers outward. An operator or API change
+              usually has implementation code, public documentation, metadata, and tests that must
+              agree. A workflow change needs its consumer and its contract validation, not just an
+              edited YAML file.
+            </p>
+            <ol class="article-steps">
+              <li><strong><code>torch/</code> and <code>torch/csrc/</code></strong><span>Python-facing implementation, C++ heavy lifting, bindings, and subsystems such as autograd and distributed.</span></li>
+              <li><strong><code>aten/</code> and <code>torchgen/</code></strong><span>Core tensor and operator work, plus the machinery that generates low-level C++ and Python bindings from operator definitions.</span></li>
+              <li><strong><code>test/</code></strong><span>Python and C++ tests, expected-output fixtures, and the CI-style test entry point.</span></li>
+              <li><strong><code>torch/testing/_internal/</code></strong><span>Shared test utilities, device-type instantiation, and operator metadata helpers.</span></li>
+              <li><strong><code>.github/</code> and <code>.ci/</code></strong><span>Workflow and CI behaviour; changes here deserve special care because they can affect a PR's own evaluation path.</span></li>
+            </ol>
+            <p>
+              The live <a href="https://github.com/pytorch/pytorch/blob/main/CONTRIBUTING.md" target="_blank" rel="noreferrer">contributing guide</a>
+              is the repository-specific source of truth. It documents the current layout,
+              code-generation responsibilities, lint tools, test entry points, PR requirements, and
+              help channels. Treat a command copied from an old issue or blog post as a lead, not a
+              replacement for those living instructions.
+            </p>
+          </section>
+
+          <section id="environment">
+            <p class="eyebrow">03 / Set up the right environment</p>
+            <h2>Build only the path your change needs, but record the context.</h2>
+            <p>
+              A local machine does not need to resemble every PyTorch CI runner. It needs a repeatable
+              loop for the change you own, plus a clear understanding of which coverage needs CI or
+              specialized hardware. Record your operating system, Python version, compiler or runtime,
+              build configuration, and accelerator context before comparing results.
+            </p>
+            <ol class="article-steps">
+              <li><strong>Python-only behaviour.</strong><span>Start with an editable checkout and focused CPU validation where that represents the affected path.</span></li>
+              <li><strong>Native C++ or operator work.</strong><span>Use the compiler and build configuration required for the subsystem, then validate the narrowest affected test.</span></li>
+              <li><strong>Accelerator or distributed work.</strong><span>Be explicit about CUDA, ROCm, MPS, XPU, networking, or hardware coverage that local validation cannot establish.</span></li>
+              <li><strong>Documentation and workflows.</strong><span>Follow their own rendering and contract conventions; a unit test alone does not prove a workflow change is correct.</span></li>
+            </ol>
+            <p>
+              Fork the repository, branch from current <code>main</code>, and follow the active setup
+              instructions exactly. Once the checkout is ready, use maintained tooling rather than
+              guessing commands:
+            </p>
+            <pre class="article-code"><code>spin --help
+spin quicklint
+python test/run_test.py -h</code></pre>
+            <p>
+              The contributor guide documents the current development, lint, and code-generation
+              paths. Use a generator only when the change requires it, and include generated output
+              only when repository convention expects it.
+            </p>
+          </section>
+
+          <section id="tests">
+            <p class="eyebrow">04 / Understand generated tests</p>
+            <h2>A CI test name may describe a concrete case, not the source method you wrote.</h2>
+            <p>
+              PyTorch tests often generate cases at import time. A single template can expand across
+              devices, dtypes, layouts, and operators. That is why a failure can name a CUDA float32
+              specialization rather than the source-level test method. The generated name is useful
+              evidence: it tells you the combination that actually failed.
+            </p>
+            <ol class="article-steps">
+              <li><strong><code>TestCase</code> and <code>run_tests()</code></strong><span>Shared test behaviour from <code>torch/testing/_internal/common_utils.py</code>.</span></li>
+              <li><strong><code>@parametrize</code></strong><span>Multiple input shapes or values without duplicating test bodies.</span></li>
+              <li><strong>Device-type instantiation.</strong><span><code>instantiate_device_type_tests()</code> and decorators such as <code>@dtypes</code> generate device- and dtype-specific cases.</span></li>
+              <li><strong>OpInfo.</strong><span>Operator metadata centralizes samples, supported dtypes, skips, decorators, and tolerance information for broad coverage.</span></li>
+              <li><strong><code>test/run_test.py</code></strong><span>The CI-style runner provides selective execution, sharding, and specialized handlers.</span></li>
+            </ol>
+            <p>
+              Write tests at the right abstraction level. Use existing parameterization rather than
+              near-duplicate test bodies, make numerical tolerances explicit when they are genuinely
+              needed, and avoid hard-coding a device when the test is meant to be portable. The
+              official <a href="https://pytorch.org/blog/understanding-pytorchs-test-infrastructure/" target="_blank" rel="noreferrer">test-infrastructure guide</a>
+              and <a href="https://github.com/pytorch/pytorch/wiki/Running-and-writing-tests" target="_blank" rel="noreferrer">testing wiki</a>
+              explain the model in detail.
+            </p>
+          </section>
+
+          <section id="validation">
+            <p class="eyebrow">05 / Validate narrowly, then widen deliberately</p>
+            <h2>Run the smallest test that could disprove your hypothesis.</h2>
+            <p>
+              The exact command depends on the test and environment, but a focused loop is more useful
+              than waiting for a broad test suite to fail. When a test is device- or dtype-instantiated,
+              reproduce with the concrete generated name CI reported, not only the source template name.
+            </p>
+            <pre class="article-code"><code># From the repository root, run a focused unittest-style case.
+python test/test_file.py TestClass.test_name
+
+# Or filter a test file by a useful substring.
+pytest test/test_file.py -k "relevant_name" -v
+
+# Use the CI-style runner when its selection or handlers are relevant.
+python test/run_test.py test_file</code></pre>
+            <ol class="article-steps">
+              <li><strong>Prove the single case.</strong><span>Run the individual test or smallest reproduction that exercises the actual branch.</span></li>
+              <li><strong>Protect its neighbourhood.</strong><span>Run the containing test file or affected group when it can catch interactions the one case cannot.</span></li>
+              <li><strong>Run the relevant quality checks.</strong><span>Use the maintained lint and type-check paths appropriate to the changed files.</span></li>
+              <li><strong>Let CI cover the matrix.</strong><span>State clearly which platforms, devices, and configurations local validation cannot represent.</span></li>
+            </ol>
+            <p>
+              The test wiki notes that direct test-file execution is generally preferred for focused
+              iteration, while <code>test/run_test.py</code> adds CI-oriented selection, sharding, and
+              handlers. CI runs tests from the <code>test</code> directory, so an invocation difference
+              can matter; if it explains a failure, put that fact in the PR instead of calling it
+              unexplained flakiness.
+            </p>
+          </section>
+
+          <section id="pr">
+            <p class="eyebrow">06 / Build an evidence bundle</p>
+            <h2>A pull request is a handoff, not a private notebook.</h2>
+            <p>
+              Make the PR readable in the order a maintainer needs it: explain the problem, describe
+              the smallest appropriate approach, show how it was validated, and identify the risk.
+              Keep unrelated formatting, refactors, and behaviour changes out of the same patch when
+              possible; cohesion makes regression analysis and review more reliable.
+            </p>
+            <ol class="article-steps">
+              <li><strong>Title and problem.</strong><span>State the change and the failure mode or missing behaviour in a few precise sentences.</span></li>
+              <li><strong>Approach.</strong><span>Explain why this is the smallest fitting fix and call out material alternatives you did not choose.</span></li>
+              <li><strong>Validation.</strong><span>List focused tests, lint, or reproductions honestly, including relevant coverage that could not run locally.</span></li>
+              <li><strong>Risk.</strong><span>Call out platform, API, numerical, performance, generated-code, and workflow implications.</span></li>
+            </ol>
+            <p>
+              Link a non-trivial change to its issue, follow the live PR checklist and required labels,
+              and complete the contributor-license-agreement step when its check directs you to do so.
+              Automation helps reviewers, but it never replaces a clear explanation or ownership of the
+              submitted patch.
+            </p>
+          </section>
+
+          <section id="ci">
+            <p class="eyebrow">07 / Triage CI</p>
+            <h2>Turn a red check into a concrete question before changing code.</h2>
+            <p>
+              A failed CI job is not automatically a signal that the patch is wrong. First establish
+              whether it is relevant, whether the failure reproduces, and which exact test
+              configuration failed. Dr. CI is a useful starting point; the HUD job and its logs carry
+              the evidence needed for a decision.
+            </p>
+            <ol class="article-steps">
+              <li><strong>Read the summary, then the job.</strong><span>Find the generated test name, device and dtype suffix, shard, revision, and first meaningful failure.</span></li>
+              <li><strong>Check the baseline.</strong><span>A failure that already occurs upstream may be unrelated, but only treat it that way with visible evidence.</span></li>
+              <li><strong>Reproduce the narrow case.</strong><span>Use the concrete generated name or focused filter locally whenever the environment permits it.</span></li>
+              <li><strong>Classify the failure.</strong><span>Common categories include a real regression, environment mismatch, test pollution, sharding assumptions, and numerical precision behaviour.</span></li>
+              <li><strong>Respond with evidence.</strong><span>Link the job, name the affected configuration, say what reproduced, and state the next action or why the job is unrelated.</span></li>
+            </ol>
+            <p>
+              Do not weaken a test simply to make a check green. Capture a flaky failure's mode and
+              frequency. If a tolerance really needs adjustment, explain the numerical reason and keep
+              coverage for the intended contract. If a shard is wrong, fix selection or isolation rather
+              than rerunning indefinitely.
+            </p>
+          </section>
+
+          <section id="review">
+            <p class="eyebrow">08 / Collaborate through review</p>
+            <h2>Make it possible for the maintainer to understand the change without reading your mind.</h2>
+            <p>
+              Review is a technical conversation, not an obstacle after implementation. A strong reply
+              either changes the code or explains, with evidence, why the existing approach is better.
+              Keep discussion close to the relevant code and resolve a thread only after the change or
+              agreement is visible.
+            </p>
+            <p>
+              The most useful review context is a minimal reproduction, subsystem details a reader
+              cannot infer from the diff, before-and-after behaviour, a direct answer to the trade-off
+              being raised, and a clear statement when CI has re-run on the latest commit. If the right
+              reviewer is unclear, let the project's triage and module ownership route the work rather
+              than randomly requesting people. Development-infrastructure office hours are available for
+              questions about CI and the contributor experience.
+            </p>
+            <p>
+              Merge is the beginning of responsibility, not the end of it. Check that the change reaches
+              the expected branch, close the related issue when appropriate, and help investigate any
+              post-merge regression with the same evidence-first method. The goal is to leave PyTorch
+              easier to change safely than it was before.
+            </p>
+          </section>
+
+          <section id="checklist" class="article-callout" aria-labelledby="checklist-title">
+            <p class="eyebrow">First-contribution checklist</p>
+            <h2 id="checklist-title">Leave the next investigator a useful signal.</h2>
+            <ol class="article-steps">
+              <li><strong>Scope.</strong><span>I can state the current behaviour, expected behaviour, affected configuration, and why the proposed scope is bounded.</span></li>
+              <li><strong>Context.</strong><span>I read nearby code, tests, and recent changes before designing the patch.</span></li>
+              <li><strong>Evidence.</strong><span>I selected the smallest test that exercises the real behaviour and understand any generated device, dtype, or operator variant.</span></li>
+              <li><strong>Quality.</strong><span>I ran focused validation and the relevant lint path, and I know which coverage must be supplied by CI.</span></li>
+              <li><strong>Handoff.</strong><span>My PR describes problem, approach, validation, and risk honestly; I will respond to review with code or evidence.</span></li>
+            </ol>
+            <div class="project-links">
+              <a class="text-link" href="https://github.com/pytorch/pytorch/blob/main/CONTRIBUTING.md" target="_blank" rel="noreferrer">Read the current PyTorch contributing guide <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="https://github.com/pytorch/pytorch/contribute" target="_blank" rel="noreferrer">Browse current good-first issues <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="https://pytorch.org/blog/understanding-pytorchs-test-infrastructure/" target="_blank" rel="noreferrer">Understand PyTorch test infrastructure <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="https://github.com/pytorch/pytorch/wiki/Running-and-writing-tests" target="_blank" rel="noreferrer">Read the testing wiki <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="https://github.com/pytorch/pytorch/wiki" target="_blank" rel="noreferrer">Explore the PyTorch developer wiki <span aria-hidden="true">↗</span></a>
+            </div>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="article-footer article-shell">
+      <span>Contributing upstream to PyTorch · field note</span>
+      <a href="../#field-notes">Back to field notes <span aria-hidden="true">↖</span></a>
+    </footer>
+  </body>
+</html>
