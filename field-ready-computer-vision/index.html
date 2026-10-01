@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A practical guide to field-ready computer-vision systems: define the decision, validate the data and runtime path, monitor real inputs, and make failure actionable."
+    />
+    <meta name="author" content="Subin George Malana" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0a1020" />
+    <link rel="canonical" href="https://subinz1.github.io/field-ready-computer-vision/" />
+    <link rel="icon" href="../assets/subin-mark.svg" type="image/svg+xml" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://subinz1.github.io/field-ready-computer-vision/" />
+    <meta property="og:title" content="Accuracy is not the deployment contract" />
+    <meta
+      property="og:description"
+      content="How to turn a computer-vision model into a dependable decision path across data, runtime, observability, and safe action."
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Accuracy is not the deployment contract" />
+    <meta
+      name="twitter:description"
+      content="How to turn a computer-vision model into a dependable decision path across data, runtime, observability, and safe action."
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Accuracy is not the deployment contract: building field-ready computer-vision systems",
+        "description": "A practical guide to turning computer-vision models into dependable systems: define the decision, validate the data and runtime path, monitor real inputs, and make failure actionable.",
+        "author": {
+          "@type": "Person",
+          "name": "Subin George Malana",
+          "alternateName": "Subin George",
+          "url": "https://subinz1.github.io/"
+        },
+        "mainEntityOfPage": "https://subinz1.github.io/field-ready-computer-vision/",
+        "about": ["Computer vision", "Machine learning operations", "Edge computing", "Model serving", "Machine learning"]
+      }
+    </script>
+    <title>Accuracy is not the deployment contract — field-ready computer vision</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="../rhel-ci-enablement/article.js" defer></script>
+  </head>
+  <body class="article-page">
+    <a class="skip-link" href="#article">Skip to article</a>
+    <div class="page-glow glow-one" aria-hidden="true"></div>
+    <div class="page-glow glow-two" aria-hidden="true"></div>
+
+    <header class="site-header" data-header>
+      <a class="brand" href="../" aria-label="Subin George home">
+        <img class="brand-mark" src="../assets/subin-mark.svg" alt="" width="32" height="32" />
+        <span class="brand-word">SUBIN</span><span class="brand-slash">/</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="sr-only">Open navigation</span><span></span><span></span>
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="Article navigation">
+        <a href="../#work">Portfolio</a>
+        <a href="../#field-notes">Field notes</a>
+        <a href="https://www.tensorflow.org/" target="_blank" rel="noreferrer">Machine learning</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">
+        <span aria-hidden="true">◐</span>
+      </button>
+    </header>
+
+    <main id="article">
+      <header class="article-hero article-shell">
+        <p class="eyebrow">Field note / applied machine learning</p>
+        <p class="article-context">Computer vision · edge deployment · model operations</p>
+        <h1>Accuracy is not the deployment contract.</h1>
+        <p class="article-lede">
+          A practical guide to turning a computer-vision model into a dependable decision path:
+          define the action, validate data and runtime behaviour, monitor real inputs, and make
+          uncertainty or failure safe to handle.
+        </p>
+        <div class="article-byline">
+          <span>By Subin George</span>
+          <span aria-hidden="true">•</span>
+          <span>For ML engineers moving vision work beyond an offline experiment</span>
+        </div>
+        <ul class="tag-list article-tags" aria-label="Topics">
+          <li>Computer vision</li><li>Edge AI</li><li>Model serving</li><li>MLOps</li>
+        </ul>
+      </header>
+
+      <section class="article-layout article-shell" aria-label="Article content">
+        <aside class="article-aside">
+          <p class="eyebrow">In this note</p>
+          <nav aria-label="On this page">
+            <a href="#intent">The real intent</a>
+            <a href="#decision">Start from a decision</a>
+            <a href="#input">Protect the input contract</a>
+            <a href="#evaluation">Measure the decision</a>
+            <a href="#deployment">Translate to a runtime</a>
+            <a href="#topology">Choose the operating path</a>
+            <a href="#observe">Keep evidence with predictions</a>
+            <a href="#release">Release with rollback</a>
+            <a href="#test-plan">Test plan and sources</a>
+          </nav>
+        </aside>
+
+        <article class="article-prose">
+          <p class="article-intro" id="intent">
+            A vision model can score well on a held-out dataset and still fail the first week it meets
+            a real camera. Lighting changes, a lens gets dirty, a firmware update rotates an image,
+            or production changes a crop or color order. The model still returns a confident number,
+            but the system no longer knows whether that number should trigger an action.
+          </p>
+          <p class="article-intro">
+            This is not a catalogue of detectors, classifiers, or segmentation networks. It is a
+            method for engineering a dependable visual decision path: physical input becomes a bounded
+            prediction, the prediction carries enough context to interpret it, and the outcome reaches
+            a safe human or automated action.
+          </p>
+          <div class="article-pullquote">
+            <p>A production vision system is a contract between the scene, the data, the runtime, the decision policy, and the people who act on the result.</p>
+          </div>
+
+          <section id="decision">
+            <p class="eyebrow">01 / Start from a decision</p>
+            <h2>Write a decision contract before writing a training script.</h2>
+            <p>
+              A model creates value only when its output changes an action safely enough to be worth
+              taking. For a hypothetical infrastructure-inspection camera, “detect a missing fastener”
+              is incomplete. A decision contract exposes the questions that determine whether the
+              prediction can be trusted.
+            </p>
+            <ol class="article-steps">
+              <li><strong>Input.</strong><span>What camera, angle, color space, resolution, and motion conditions are supported?</span></li>
+              <li><strong>Target.</strong><span>Is the result a box, mask, class, count, or condition score? A precise target prevents a vague label from becoming a vague action.</span></li>
+              <li><strong>Consumer.</strong><span>Does an operator review it, does it create a ticket, or does it stop a machine? The consumer determines the cost of false positives, false negatives, and delay.</span></li>
+              <li><strong>Timing and fallback.</strong><span>What is the maximum useful end-to-end latency, and what happens when confidence or image quality is insufficient?</span></li>
+              <li><strong>Evidence.</strong><span>Which image, model version, preprocessing version, and threshold created the result?</span></li>
+            </ol>
+            <p>
+              A useful contract can be concise: “For daylight images from Camera A, identify potentially
+              missing fasteners with a location and confidence. Send high-confidence cases to maintenance,
+              route ambiguous cases to review, and create no automated action when image-quality checks
+              fail.” This is a much stronger starting point than “build an object detector.”
+            </p>
+            <p>
+              There is no universal confidence threshold. A false negative in a safety-oriented workflow
+              can cost more than a false positive that creates one review task. In a high-volume consumer
+              system, the review queue may be the expensive element. The threshold must be justified by
+              the decision and its fallback, not by convention.
+            </p>
+          </section>
+
+          <section id="input">
+            <p class="eyebrow">02 / Protect the input contract</p>
+            <h2>The preprocessing path is part of the model.</h2>
+            <p>
+              Training and serving inputs must mean the same thing. Color order, image decoding, resize
+              mode, crop policy, normalization, orientation, frame selection, and missing metadata can
+              change a model's behaviour while every HTTP response still looks valid.
+            </p>
+            <p>
+              Keep a small, versioned set of representative inputs and run the same preprocessing code—or
+              an equivalence check—through training-side and deployed paths. For every golden input,
+              compare decoded dimensions and orientation, crop geometry, color range, normalized tensor
+              shape and dtype, and final post-processed prediction.
+            </p>
+            <pre class="article-code"><code>same image
+  → decode and orient
+  → resize or crop
+  → normalize to model tensor
+  → infer and post-process
+
+Compare this path in training, export validation, and the live runtime.</code></pre>
+            <p>
+              A common failure is simple: training used RGB images with aspect-preserving resize and
+              padding, while production decodes BGR images and resizes directly to a square. The system
+              returns tensors and boxes, but its predictions become systematically wrong. An integration
+              test that only checks that the endpoint responds cannot catch that error.
+            </p>
+            <p>
+              Data validation makes this boundary observable. TensorFlow Data Validation, for example,
+              can enforce a schema, report anomalies, compare training and serving distributions for skew,
+              and compare successive spans for drift. The tool is optional; explicit expectations about
+              image properties, label availability, source mix, class balance, and malformed input are
+              not. [TensorFlow Data Validation](https://www.tensorflow.org/tfx/guide/tfdv) documents those
+              schema, skew, and drift capabilities.
+            </p>
+            <ol class="article-steps">
+              <li><strong>Source.</strong><span>Review camera model, location, lens, firmware, codec, and capture path.</span></li>
+              <li><strong>Scene.</strong><span>Slice data by lighting, weather, background, viewpoint, occlusion, motion, and density.</span></li>
+              <li><strong>Time.</strong><span>Prevent near-identical video frames or scene captures from leaking across train, validation, and test data.</span></li>
+              <li><strong>Label and action.</strong><span>Review label definitions, ambiguity, disagreement, and the cases that are most costly to miss or escalate.</span></li>
+            </ol>
+          </section>
+
+          <section id="evaluation">
+            <p class="eyebrow">03 / Measure the decision</p>
+            <h2>Aggregate accuracy is not a release decision.</h2>
+            <p>
+              Accuracy, precision, recall, and mean average precision are valuable summaries, but they
+              average away source conditions, error costs, and threshold choices. Keep the slices that
+              can change a decision visible in the evaluation report.
+            </p>
+            <ol class="article-steps">
+              <li><strong>Bright and clean scenes.</strong><span>Protect the ordinary baseline with precision, recall, and latency.</span></li>
+              <li><strong>Low light, blur, and occlusion.</strong><span>Measure the miss rate and confidence distribution; uncertainty should appear before confident error.</span></li>
+              <li><strong>New sources.</strong><span>Compare per-camera or per-location metrics and input statistics before treating a new feed as equivalent.</span></li>
+              <li><strong>Empty and ambiguous scenes.</strong><span>Measure false-positive cost, review rate, and reviewer disagreement.</span></li>
+            </ol>
+            <p>
+              The threshold belongs in the evaluation. Rather than choosing <code>0.50</code> because it
+              is familiar, test operating points that map to action:
+            </p>
+            <pre class="article-code"><code>high confidence + input checks pass  → create the defined action
+middle confidence or uncertain input → request human review
+low confidence                       → record the observation, take no action</code></pre>
+            <p>
+              A model release should compare more than one headline metric: critical slices, decision
+              thresholds, average and tail latency, memory use, artifact size, and review volume. A small
+              aggregate gain is not a win if it doubles constrained-device latency or creates unacceptable
+              false positives in the slice that matters most.
+            </p>
+          </section>
+
+          <section id="deployment">
+            <p class="eyebrow">04 / Translate to a runtime</p>
+            <h2>A deployment artifact deserves release-candidate treatment.</h2>
+            <p>
+              Moving a model from a training framework into a runtime is a translation step with its own
+              compatibility, numerical, performance, and packaging risks. A server system provides model
+              version policies, batching, monitoring, and a stable client-facing API. TensorFlow Serving
+              is one example; its documentation covers model serving while its configuration guide covers
+              version policies, batching, monitoring, and model configuration.
+            </p>
+            <p>
+              Edge deployment makes specialization more visible. Current PyTorch edge tooling uses an
+              export, lowering, and runtime path that can target selected hardware backends; quantization
+              and memory planning are part of preparing the artifact, not a late optimisation. The same
+              principle applies to any runtime: a device-targeted model is not the same release as the
+              training-framework checkpoint. [ExecuTorch's export and lowering guide](https://docs.pytorch.org/executorch/stable/using-executorch-export.html)
+              explains this target-specific workflow.
+            </p>
+            <p>
+              Run a deployment-parity harness for every candidate:
+            </p>
+            <ol class="article-steps">
+              <li><strong>Reference model.</strong><span>Run golden inputs through the training-framework model.</span></li>
+              <li><strong>Exported artifact.</strong><span>Run those inputs through the converted or exported model and compare the relevant output representation.</span></li>
+              <li><strong>Target hardware.</strong><span>Measure the artifact on representative CPU, GPU, NPU, or embedded hardware.</span></li>
+              <li><strong>Complete integration.</strong><span>Validate the actual service or device path, including decoding, pre/post-processing, transfer, and action handoff.</span></li>
+            </ol>
+            <p>
+              Measure the whole transaction—not just raw inference. Fast core inference can be erased by
+              image decoding, memory copies, post-processing, or a delayed handoff. Field devices can
+              impose memory, power, thermal, storage, and connectivity limits that a server benchmark
+              does not expose.
+            </p>
+          </section>
+
+          <section id="topology">
+            <p class="eyebrow">05 / Choose the operating path</p>
+            <h2>Edge, server, batch, and hybrid are decision constraints—not ideology.</h2>
+            <ol class="article-steps">
+              <li><strong>Edge or embedded.</strong><span>Use it when latency, privacy, bandwidth, or intermittent connectivity require a local decision. Prioritize memory, power, thermal behaviour, and target-specific export.</span></li>
+              <li><strong>Online server.</strong><span>Use it when centralized compute and frequent model updates help. Prioritize tail latency, batching, versioning, load behaviour, and rollback.</span></li>
+              <li><strong>Batch.</strong><span>Use it when decisions can wait. Prioritize throughput, data lineage, failure recovery, and result delivery.</span></li>
+              <li><strong>Hybrid.</strong><span>Use a fast local filter with a deeper centralized analysis or review path when both constraints are real. Make the handoff contract explicit.</span></li>
+            </ol>
+            <p>
+              For example, a rail-side camera with intermittent connectivity can use an on-device filter
+              to store suspicious frames and metadata for later review, while a central service runs a
+              larger model when connected. This is not a compromise if it is intentional: the two stages
+              need separate success criteria and a documented handoff. ExecuTorch's explanation of
+              export, transformation, compilation, memory planning, and backend selection is a useful
+              model for thinking through that boundary. [How ExecuTorch works](https://docs.pytorch.org/executorch/stable/intro-how-it-works.html)
+              describes the stages.
+            </p>
+          </section>
+
+          <section id="observe">
+            <p class="eyebrow">06 / Keep evidence with predictions</p>
+            <h2>A result without context is almost impossible to debug.</h2>
+            <p>
+              A dependable system emits structured evidence that can answer, later, what it saw, what it
+              did, and why. Do not log every image without considering privacy, policy, storage, and
+              bandwidth. Instead, retain enough safely governed evidence to investigate material errors.
+            </p>
+            <pre class="article-code"><code>event_id                  capture or request identifier
+captured_at               source timestamp and time zone
+source_id                 camera, device, or pipeline identity
+input_contract_version    decode and preprocessing contract
+model_version             model and artifact identifier
+runtime_version           service, runtime, and backend version
+quality_signals           blur, brightness, resolution, capture checks
+prediction                class, boxes, or mask plus scores
+decision                  action, review, or no-action outcome
+threshold_policy_version  decision policy in effect
+trace_link                safe reference to logs, image, or review record</code></pre>
+            <p>
+              Monitor system health (errors, queue age, p50/p95/p99 latency, device memory, thermal
+              throttling), input health (resolution, blur, brightness, source mix), model health
+              (confidence, class mix, review rate, delayed-label quality), and decision health (action
+              volume, overrides, review time, and incidents). Drift is a prompt to investigate—not an
+              automatic verdict that the model is wrong. Join a distribution change with quality signals,
+              model outcomes, and delayed ground truth before deciding what changed.
+            </p>
+          </section>
+
+          <section id="release">
+            <p class="eyebrow">07 / Release with a rollback story</p>
+            <h2>Keep the blast radius small and the exit known.</h2>
+            <p>
+              A release plan should name the model version, preprocessing version, runtime artifact,
+              threshold policy, target sources, acceptance criteria, and rollback condition. The release
+              should be able to revert any of those independent pieces when evidence crosses the agreed
+              line.
+            </p>
+            <ol class="article-steps">
+              <li><strong>Offline gate.</strong><span>Validate held-out and slice-level evaluation, deployment parity, artifact integrity, and latency and memory budgets.</span></li>
+              <li><strong>Shadow path.</strong><span>Run the new model beside the current decision path without changing actions; inspect disagreements.</span></li>
+              <li><strong>Limited rollout.</strong><span>Enable a bounded set of devices, locations, cameras, or traffic while observing input and decision health.</span></li>
+              <li><strong>Promotion and rollback.</strong><span>Expand only when the agreed evidence holds, including review-queue impact and delayed labels; revert model, artifact, preprocessing, or policy independently when it does not.</span></li>
+            </ol>
+            <p>
+              This is an ML problem and a software-delivery problem. Google's MLOps guidance explains why
+              production ML needs more than source-code CI: data and model validation, serving
+              infrastructure, monitoring, and reproducible pipeline metadata are part of the system around
+              the model. [MLOps: continuous delivery and automation pipelines](https://docs.cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning)
+              provides that broader context.
+            </p>
+          </section>
+
+          <section id="test-plan" class="article-callout" aria-labelledby="test-plan-title">
+            <p class="eyebrow">A practical vision-system test plan</p>
+            <h2 id="test-plan-title">Test the decision path, not only the model.</h2>
+            <ol class="article-steps">
+              <li><strong>Input and preprocessing.</strong><span>Use known JPEG, PNG, rotated, grayscale, corrupt, and oversized inputs; compare golden images to normalized tensors.</span></li>
+              <li><strong>Model and post-processing.</strong><span>Protect output tolerances, overlapping detections, empty scenes, boundary scores, label maps, thresholds, and action mapping.</span></li>
+              <li><strong>Runtime and integration.</strong><span>Test artifact loading, first and steady-state inference, memory, end-to-end latency, persisted decision records, and version traceability.</span></li>
+              <li><strong>Data and operations.</strong><span>Validate schema, sources, distributions, and labels; rehearse rollback and review-queue overload behaviour.</span></li>
+            </ol>
+            <p>
+              Suppose a classifier distinguishes <em>clear</em>, <em>uncertain</em>, and <em>defect</em>.
+              A model-only test confirms its scores. A system test also proves that a rotated image remains
+              correctly oriented, an unreadable input creates no action, a borderline case reaches review,
+              the record identifies the serving artifact, and rollback restores the earlier policy without
+              losing traceability. That is how expected uncertainty and unexpected failure become deliberate
+              system behaviour.
+            </p>
+            <div class="project-links">
+              <a class="text-link" href="https://www.tensorflow.org/tfx/guide/serving" target="_blank" rel="noreferrer">Read TensorFlow Serving guidance <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="https://www.tensorflow.org/tfx/guide/tfdv" target="_blank" rel="noreferrer">Read TensorFlow Data Validation guidance <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="https://docs.cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning" target="_blank" rel="noreferrer">Read the MLOps delivery guide <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="https://docs.pytorch.org/executorch/stable/using-executorch-export.html" target="_blank" rel="noreferrer">Read ExecuTorch export guidance <span aria-hidden="true">↗</span></a>
+            </div>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="article-footer article-shell">
+      <span>Field-ready computer vision · field note</span>
+      <a href="../#field-notes">Back to field notes <span aria-hidden="true">↖</span></a>
+    </footer>
+  </body>
+</html>
