@@ -119,6 +119,12 @@
               based on sustained evidence, ownership, and the effect a result may have on a pull
               request. Do not treat promotion as a setup checkbox.
             </p>
+            <p>
+              At L3, a backend can add a non-blocking PR check under its configured opt-in label.
+              L4 is the critical-backend tier where a result may gate every PR and on-call
+              ownership is required. Both are maintained promotion decisions; new integrations
+              should focus on a dependable L1 or L2 path first.
+            </p>
             <div class="article-pullquote">
               <p>First prove that the right revision reaches the right CI. Then make the result trusted and useful.</p>
             </div>
@@ -138,27 +144,51 @@
               makes event participation reviewable, and gives the relay an accountable destination
               for each dispatch.
             </p>
+            <p>
+              The relay app dispatches the event after installation. A downstream repository does
+              not need a callback URL, a relay secret, or custom token-minting code: the official
+              callback action handles identity and delivery once the workflow has the appropriate
+              OIDC permission.
+            </p>
           </section>
 
           <section id="receive">
             <p class="eyebrow">03 / Receive the revision</p>
             <h2>Build what PyTorch asked you to build.</h2>
             <p>
-              Add a downstream workflow that listens for the registered
-              <code>repository_dispatch</code> event types. Read the event payload and check out
-              the exact source revision it identifies; do not silently substitute a default branch
-              tip or a later commit. A meaningful compatibility result must be tied to one
-              upstream revision.
+              Add a downstream workflow that listens for <code>repository_dispatch</code> events.
+              The current reference receiver handles <code>pull_request</code> and <code>push</code>
+              payloads. Event participation in the allowlist—pull requests, nightlies, or both—is
+              a registration choice; it is not a reason to guess at the payload shape. Keep the
+              receiver aligned with the current documented contract.
+            </p>
+            <pre class="article-code"><code>on:
+  repository_dispatch:
+    types: [pull_request, push]
+
+permissions:
+  id-token: write # required for L2 callback authentication
+
+# Use actions: write only when the workflow calls the Actions API to cancel runs.</code></pre>
+            <p>
+              Read the payload and check out the exact source revision it identifies; do not
+              silently substitute a default-branch tip or a later commit. For a PR that is
+              <code>pull_request.head.sha</code>; for a non-deleted push it is <code>after</code>.
+              A deleted push has the GitHub null SHA and must skip checkout because there is no
+              revision to build.
             </p>
             <ol class="article-steps">
-              <li><strong>Keep the dispatch context.</strong><span>Carry the upstream SHA, event kind, and source URL through the workflow so a person can connect the HUD entry to the downstream run.</span></li>
+              <li><strong>Validate and keep the dispatch context.</strong><span>Confirm the upstream repository is <code>pytorch/pytorch</code>, retain the event kind and source URL, and carry <code>delivery_id</code> through the workflow. It is required for L2 state tracking.</span></li>
+              <li><strong>Handle closed and deleted events safely.</strong><span>A closed PR may need only cancellation or cleanup. A deleted push must not attempt a checkout of its null SHA.</span></li>
               <li><strong>Use concurrency deliberately.</strong><span>Cancel superseded work when that is safe for the backend, while preserving enough run context to explain what happened to an earlier dispatch.</span></li>
               <li><strong>Run a representative check first.</strong><span>Start with a build or focused test that can be maintained reliably. A small dependable signal is more valuable than a large flaky one.</span></li>
             </ol>
             <p>
               The <a href="https://github.com/pytorch/crcr-test/blob/main/README.md" target="_blank" rel="noreferrer">CRCR test backend documentation</a>
               shows concrete receiver patterns. Treat it as a reference implementation and testbed,
-              not a requirement to copy its probe-specific workflows into every backend.
+              not a requirement to copy its probe-specific workflows into every backend. Its health
+              probe has no cron: live upstream activity produces the relay dispatch. A backend's
+              own scheduled nightly workflow is a separate integration concern.
             </p>
           </section>
 
@@ -172,9 +202,24 @@
               identifying context supplied by the dispatch. The relay validates the workload
               identity before it accepts that result.
             </p>
+            <pre class="article-code"><code>permissions:
+  id-token: write
+
+- uses: pytorch/test-infra/.github/actions/cross-repo-ci-relay-callback@main
+  with:
+    status: in_progress
+
+# Run the build and test step here.
+
+- if: always()
+  uses: pytorch/test-infra/.github/actions/cross-repo-ci-relay-callback@main
+  with:
+    status: completed
+    conclusion: ${{ steps.tests.outputs.outcome }}
+    test-results: '{"passed": 42, "failed": 0, "skipped": 3}'</code></pre>
             <ol class="article-steps">
               <li><strong>Report <code>in_progress</code> early.</strong><span>This distinguishes a running validation from a missing response and lets timeout handling describe the real lifecycle.</span></li>
-              <li><strong>Report completion on every path.</strong><span>Use an always-run completion step so a failing test, cancellation, or infrastructure error does not leave a stale in-progress state behind.</span></li>
+              <li><strong>Report completion on every path.</strong><span>Use an always-run completion step so a failing test, cancellation, or infrastructure error does not leave a stale in-progress state behind. Report a conclusion and test-result counts, and verify that the artifact link resolves to the GitHub Actions run.</span></li>
               <li><strong>Preserve actual outcomes.</strong><span>Do not turn expected probe outcomes such as <code>xfail</code>, <code>xcancel</code>, or <code>xtimeout</code> into generic success. They have distinct meanings in the relay model.</span></li>
               <li><strong>Retry rate-limited callbacks.</strong><span>For a 429 response, use bounded backoff and honor <code>Retry-After</code>; a temporary delivery limit should not erase a completed test result.</span></li>
             </ol>
@@ -195,6 +240,13 @@
               the backend is reliable enough for a stronger role, discuss the next level with the
               CRCR maintainers rather than assuming the workflow itself grants promotion.
             </p>
+            <p>
+              Keep callback bursts under control. The current reference guidance documents a
+              shared relay limit of 60 callback requests per minute: add jitter where multiple
+              jobs report together, bound retries with backoff, and honor <code>Retry-After</code>
+              when the relay responds with 429. Treat the limit as an operational guardrail, not
+              a number to work around.
+            </p>
           </section>
 
           <section id="references" class="article-callout" aria-labelledby="references-title">
@@ -209,6 +261,8 @@
               <a class="text-link" href="https://pytorch.org/blog/introducing-cross-repository-ci-relay-scalable-ci-for-pytorchs-out-of-tree-backends/" target="_blank" rel="noreferrer">Read the PyTorch CRCR overview <span aria-hidden="true">↗</span></a>
               <a class="text-link" href="https://github.com/pytorch/crcr-test/blob/main/README.md" target="_blank" rel="noreferrer">Read the CRCR backend reference <span aria-hidden="true">↗</span></a>
               <a class="text-link" href="https://github.com/pytorch/pytorch/blob/main/.github/allowlist.yml" target="_blank" rel="noreferrer">Inspect the PyTorch allowlist <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="https://github.com/apps/pytorch-fdn-cross-repo-ci-relay" target="_blank" rel="noreferrer">Open the relay GitHub App <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="https://github.com/pytorch/rfcs/blob/master/RFC-0050-Cross-Repository-CI-Relay-for-PyTorch-Out-of-Tree-Backends.md" target="_blank" rel="noreferrer">Read the CRCR RFC <span aria-hidden="true">↗</span></a>
             </div>
           </section>
         </article>

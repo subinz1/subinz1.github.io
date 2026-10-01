@@ -253,6 +253,8 @@ h1 em { color: var(--accent); font-family: ui-serif, Georgia, serif; font-weight
 .field-note-card h3 { font-size: clamp(1.45rem, 2.4vw, 2.1rem); letter-spacing: -.055em; line-height: 1.04; margin: auto 0 .8rem; max-width: 15ch; }
 .field-note-card p:not(.field-note-meta) { color: var(--muted); line-height: 1.6; }
 .field-note-card .text-link { margin-top: auto; }
+.article-code { background: color-mix(in srgb, var(--surface-solid) 88%, black); border: 1px solid var(--line); border-radius: .7rem; color: var(--ink); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .82rem; line-height: 1.65; margin: 2rem 0; overflow-x: auto; padding: 1.15rem 1.3rem; }
+.article-code code { font: inherit; }
 
 @media (max-width: 760px) {
   .field-notes { padding-bottom: 5rem; padding-top: 5rem; }
