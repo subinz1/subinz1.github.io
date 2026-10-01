@@ -34,3 +34,64 @@ window.addEventListener(
   () => header?.classList.toggle("is-scrolled", window.scrollY > 16),
   { passive: true }
 );
+
+const articleNavigation = document.querySelector(".article-aside nav");
+const sectionLinks = articleNavigation
+  ? [...articleNavigation.querySelectorAll('a[href^="#"]')]
+  : [];
+const sectionTargets = sectionLinks
+  .map((link) => ({ link, section: document.querySelector(link.hash) }))
+  .filter(({ section }) => section);
+
+let activeSectionId;
+function setActiveSection(id) {
+  if (id === activeSectionId) {
+    return;
+  }
+
+  activeSectionId = id;
+  sectionTargets.forEach(({ link, section }) => {
+    const active = section.id === id;
+    link.classList.toggle("is-active", active);
+    if (active) {
+      link.setAttribute("aria-current", "location");
+    } else {
+      link.removeAttribute("aria-current");
+    }
+  });
+}
+
+function updateActiveSection() {
+  const offset = (header?.offsetHeight ?? 0) + 48;
+  let current = sectionTargets[0];
+
+  sectionTargets.forEach((target) => {
+    if (target.section.getBoundingClientRect().top <= offset) {
+      current = target;
+    }
+  });
+
+  if (current) {
+    setActiveSection(current.section.id);
+  }
+}
+
+if (sectionTargets.length) {
+  let frameRequested = false;
+  const scheduleActiveSectionUpdate = () => {
+    if (!frameRequested) {
+      frameRequested = true;
+      window.requestAnimationFrame(() => {
+        updateActiveSection();
+        frameRequested = false;
+      });
+    }
+  };
+
+  sectionLinks.forEach((link) => {
+    link.addEventListener("click", () => setActiveSection(link.hash.slice(1)));
+  });
+  window.addEventListener("scroll", scheduleActiveSectionUpdate, { passive: true });
+  window.addEventListener("resize", scheduleActiveSectionUpdate);
+  updateActiveSection();
+}
