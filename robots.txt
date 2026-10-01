@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /login/
+Disallow: /private/
+
+Sitemap: https://subinz1.github.io/sitemap.xml
