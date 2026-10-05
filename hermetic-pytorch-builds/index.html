@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="How hermetic PyTorch builds prepare internally controlled inputs so Red Hat teams can receive qualified wheels for releases and point releases without public-internet dependencies at build time." />
+    <meta name="author" content="Subin George" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0a1020" />
+    <link rel="canonical" href="https://subinz1.github.io/hermetic-pytorch-builds/" />
+    <link rel="icon" href="../assets/subin-mark.svg" type="image/svg+xml" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://subinz1.github.io/hermetic-pytorch-builds/" />
+    <meta property="og:title" content="Day-zero PyTorch wheels without a public-internet dependency" />
+    <meta property="og:description" content="How a hermetic supply chain turns a PyTorch release into an internally consumable, qualified wheel." />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Day-zero PyTorch wheels without a public-internet dependency" />
+    <meta name="twitter:description" content="How a hermetic supply chain turns a PyTorch release into an internally consumable, qualified wheel." />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Day-zero PyTorch wheels without a public-internet dependency",
+        "description": "How hermetic PyTorch builds prepare internally controlled inputs so product teams can receive qualified wheels for releases and point releases without public-internet dependencies at build time.",
+        "author": { "@type": "Person", "name": "Subin George", "url": "https://subinz1.github.io/" },
+        "mainEntityOfPage": "https://subinz1.github.io/hermetic-pytorch-builds/",
+        "about": ["PyTorch", "Software supply chain", "Build systems", "Release engineering", "RHEL AI"]
+      }
+    </script>
+    <title>Day-zero PyTorch wheels without a public-internet dependency — a field note</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="../rhel-ci-enablement/article.js" defer></script>
+  </head>
+  <body class="article-page">
+    <a class="skip-link" href="#article">Skip to article</a>
+    <div class="page-glow glow-one" aria-hidden="true"></div>
+    <div class="page-glow glow-two" aria-hidden="true"></div>
+
+    <header class="site-header" data-header>
+      <a class="brand" href="../" aria-label="Subin George home">
+        <img class="brand-mark" src="../assets/subin-mark.svg" alt="" width="32" height="32" />
+        <span class="brand-word">SUBIN</span><span class="brand-slash">/</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="sr-only">Open navigation</span><span></span><span></span>
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="Article navigation">
+        <a href="../#work">Portfolio</a>
+        <a href="../#field-notes">Field notes</a>
+        <a href="https://pytorch.org/" target="_blank" rel="noreferrer">PyTorch</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">
+        <span aria-hidden="true">◐</span>
+      </button>
+    </header>
+
+    <main id="article">
+      <header class="article-hero article-shell">
+        <p class="eyebrow">Field note / PyTorch release engineering</p>
+        <p class="article-context">PyTorch · RHEL AI · supply chain · platform qualification</p>
+        <h1>Deliver PyTorch on day zero without relying on the public internet.</h1>
+        <p class="article-lede">
+          A hermetic build path prepares approved source, toolchains, and dependencies inside the
+          organization before release day—so a PyTorch release or point release can become a
+          qualified wheel that internal product teams can consume immediately.
+        </p>
+        <div class="article-byline">
+          <span>By Subin George</span><span aria-hidden="true">•</span>
+          <span>For ML infrastructure and product-platform teams</span>
+        </div>
+        <ul class="tag-list article-tags" aria-label="Topics">
+          <li>PyTorch</li><li>Hermetic builds</li><li>Release engineering</li><li>Supply chain</li>
+        </ul>
+      </header>
+
+      <section class="article-layout article-shell" aria-label="Article content">
+        <aside class="article-aside">
+          <p class="eyebrow">In this note</p>
+          <nav aria-label="On this page">
+            <a href="#why">The release problem</a>
+            <a href="#hermetic">The hermetic contract</a>
+            <a href="#day-zero">Preparing day zero</a>
+            <a href="#qualification">Qualifying the wheel</a>
+            <a href="#users">What teams receive</a>
+            <a href="#checklist">Operating checklist</a>
+          </nav>
+        </aside>
+
+        <article class="article-prose">
+          <p class="article-intro">
+            An upstream PyTorch release is source code, not yet a product-ready artifact. Product
+            teams need an answer to a more practical question: can they receive a wheel for their
+            supported platform now, without rebuilding PyTorch themselves or allowing their
+            production environment to fetch from public services?
+          </p>
+
+          <section id="why">
+            <p class="eyebrow">01 / The release problem</p>
+            <h2>A release cannot depend on a live public supply chain.</h2>
+            <p>
+              A conventional source build often reaches out to public Git repositories, package
+              indexes, language registries, and binary-download endpoints while it runs. That is
+              convenient for a laptop. It is a poor production release contract: a public package
+              can change or disappear, a network service can be unavailable, and the build may
+              accept a dependency without the provenance, security, or licensing review expected
+              by the organization.
+            </p>
+            <p>
+              The cost is not just one failed job. A product team waits for a usable wheel, an
+              engineer has to reconstruct a changing dependency graph, and a secure build
+              environment must make an exception for uncontrolled external access. This is exactly
+              the uncertainty a hermetic PyTorch build is meant to remove.
+            </p>
+            <div class="article-pullquote">
+              <p>Release day should consume prepared, approved inputs—not discover new dependencies over the internet.</p>
+            </div>
+          </section>
+
+          <section id="hermetic">
+            <p class="eyebrow">02 / The hermetic contract</p>
+            <h2>Bring the build inputs inside the trusted boundary first.</h2>
+            <p>
+              Hermetic does not mean that PyTorch has no dependencies. It means build-critical
+              inputs are explicit, controlled, and available internally before the release build
+              starts. Required packages can be created from approved source, reviewed, and staged
+              in internal registries instead of being retrieved opportunistically from public
+              services while the wheel is being built.
+            </p>
+            <ol class="article-steps">
+              <li><strong>Resolve the source.</strong><span>Record the exact upstream release, point release, or commit that will become the artifact.</span></li>
+              <li><strong>Prepare dependencies.</strong><span>Build or stage required packages from approved source and make them available through internal registries.</span></li>
+              <li><strong>Freeze the environment.</strong><span>Use reviewed builder and runtime images with known compiler, Python, and system-library inputs.</span></li>
+              <li><strong>Build without public egress.</strong><span>At release time, construct the wheel using only the prepared internal bill of materials.</span></li>
+            </ol>
+            <p>
+              This does not eliminate licensing or security work. It creates the control point for
+              doing that work well: each component can be reviewed, its license recorded, its
+              vulnerabilities assessed, and its approved output promoted into the internal build
+              supply chain before it is used in a release artifact.
+            </p>
+          </section>
+
+          <section id="day-zero">
+            <p class="eyebrow">03 / Preparing day zero</p>
+            <h2>Fast release delivery starts before the tag arrives.</h2>
+            <p>
+              Day-zero delivery is not an improvised race on the day an upstream release appears.
+              It is the result of keeping the build recipe, internal dependency bill of materials,
+              builder images, package registries, runner capacity, and validation plan ready in
+              advance.
+            </p>
+            <pre class="article-code"><code>upstream release or point release
+→ resolve and record the exact source revision
+→ build with approved internal inputs and no public-network dependency
+→ validate each supported platform
+→ apply the quality gate
+→ publish qualified wheels for internal product teams</code></pre>
+            <p>
+              The objective is clear: when a release or point release is ready, the PyTorch wheel
+              should not be delayed by a second, unpredictable dependency-integration cycle. The
+              internal platform has already done the preparation needed to turn source into a
+              consumable artifact.
+            </p>
+          </section>
+
+          <section id="qualification">
+            <p class="eyebrow">04 / Qualifying the wheel</p>
+            <h2>A successful build is necessary, not sufficient.</h2>
+            <p>
+              One upstream revision can need distinct CPU, CUDA, ROCm, and emerging-hardware
+              artifacts. Each has a different compiler and runtime path, so every selected
+              platform needs its own build recipe, target test policy, and traceable result. A
+              healthy CPU wheel does not prove that a GPU wheel is ready.
+            </p>
+            <p>
+              The pipeline therefore separates creation from qualification. It can publish a
+              candidate artifact for downstream validation, then use a quality gate to determine
+              whether the candidate is complete and trustworthy. The gate must fail closed:
+              failed, cancelled, timed-out, missing, stale, or invalid test evidence cannot be
+              reported as a passing platform result.
+            </p>
+            <p>
+              This makes the result useful to both release engineering and the teams consuming
+              it. The report can answer which source revision, builder, dependency set, platform,
+              test selection, and terminal outcome produced a wheel—without relying on a vanished
+              runner or a long log as the only evidence.
+            </p>
+          </section>
+
+          <section id="users">
+            <p class="eyebrow">05 / What internal teams receive</p>
+            <h2>A stable internal path from PyTorch release to product use.</h2>
+            <p>
+              The result is more than a package location. A product team receives a wheel that is
+              tied to a known PyTorch release or point release, built through a controlled internal
+              supply chain, qualified for its supported platform, and available from an internal
+              artifact destination. Teams do not need to rebuild PyTorch or introduce public
+              internet access into their own product builds to get started.
+            </p>
+            <p>
+              The same evidence helps different users in different ways: product maintainers get
+              a supported input, performance engineers get a reproducible baseline, and platform
+              owners get a clear record when a release is not ready for one architecture or
+              accelerator path. The wheel is the artifact; the accompanying provenance and
+              validation evidence are the compatibility promise.
+            </p>
+          </section>
+
+          <section id="checklist" class="article-callout" aria-labelledby="checklist-title">
+            <p class="eyebrow">Release-readiness checklist</p>
+            <h2 id="checklist-title">What must be true before calling a wheel day-zero ready?</h2>
+            <ol class="article-steps">
+              <li><strong>Immutable source.</strong><span>The upstream release or point-release revision is explicitly identified.</span></li>
+              <li><strong>Internal inputs.</strong><span>Dependencies, toolchains, and base images are available through approved internal paths.</span></li>
+              <li><strong>No public-network requirement.</strong><span>The release build can complete with public-network egress unavailable.</span></li>
+              <li><strong>Reviewed supply chain.</strong><span>Required source, licensing, and security checks happen before release-time construction.</span></li>
+              <li><strong>Platform evidence.</strong><span>Each selected platform has fresh, valid build and test evidence; incomplete evidence fails closed.</span></li>
+              <li><strong>Usable delivery.</strong><span>Qualified wheels have an authenticated internal destination and traceable release metadata.</span></li>
+            </ol>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="article-footer article-shell">
+      <span>Hermetic PyTorch builds · field note</span>
+      <a href="../#work">Back to selected work <span aria-hidden="true">↖</span></a>
+    </footer>
+  </body>
+</html>
