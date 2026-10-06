@@ -61,9 +61,9 @@ if (systemLoader) {
         loaderProgress.textContent = String(progress).padStart(2, "0");
         loaderStage.textContent = stage;
         loaderSteps[index].classList.add("is-linked");
-      }, 180 + index * 260));
+      }, 360 + index * 660));
     });
-    loaderTimers.push(window.setTimeout(finishLoader, 1_180));
+    loaderTimers.push(window.setTimeout(finishLoader, 2_400));
     loaderSkip.addEventListener("click", finishLoader);
   }
 }
