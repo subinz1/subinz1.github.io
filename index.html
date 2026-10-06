@@ -59,6 +59,27 @@
     <script src="script.js" defer></script>
   </head>
   <body>
+    <div class="system-loader" data-system-loader role="status" aria-live="polite" aria-label="Loading Subin George's portfolio">
+      <div class="system-loader__grid" aria-hidden="true"></div>
+      <div class="system-loader__content">
+        <div class="system-loader__brand">
+          <img src="assets/subin-mark.svg" alt="" width="48" height="48" />
+          <span>SUBIN</span><b>/</b>
+        </div>
+        <p class="system-loader__eyebrow">Establishing context</p>
+        <div class="system-loader__readout" aria-hidden="true">
+          <strong><span data-loader-progress>00</span><small>/100</small></strong>
+          <span data-loader-stage>mapping systems</span>
+        </div>
+        <ol class="system-loader__trace" aria-label="Portfolio loading progress">
+          <li data-loader-step><span>01</span> PyTorch ecosystem <em>link</em></li>
+          <li data-loader-step><span>02</span> ML infrastructure <em>link</em></li>
+          <li data-loader-step><span>03</span> Open-source work <em>link</em></li>
+        </ol>
+      </div>
+      <button class="system-loader__skip" type="button" data-loader-skip>Skip intro <span aria-hidden="true">↗</span></button>
+    </div>
+    <noscript><style>.system-loader { display: none; }</style></noscript>
     <a class="skip-link" href="#main">Skip to content</a>
     <div class="page-glow glow-one" aria-hidden="true"></div>
     <div class="page-glow glow-two" aria-hidden="true"></div>

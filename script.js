@@ -1,5 +1,6 @@
 const root = document.documentElement;
 const prefersLight = window.matchMedia("(prefers-color-scheme: light)");
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const storedTheme = localStorage.getItem("theme");
 
 function setTheme(theme) {
@@ -8,6 +9,64 @@ function setTheme(theme) {
 }
 
 setTheme(storedTheme || (prefersLight.matches ? "light" : "dark"));
+
+const systemLoader = document.querySelector("[data-system-loader]");
+if (systemLoader) {
+  const loaderProgress = systemLoader.querySelector("[data-loader-progress]");
+  const loaderStage = systemLoader.querySelector("[data-loader-stage]");
+  const loaderSteps = systemLoader.querySelectorAll("[data-loader-step]");
+  const loaderSkip = systemLoader.querySelector("[data-loader-skip]");
+  const loaderTimers = [];
+  const loaderSessionKey = "subin-system-loader-seen";
+  let loaderFinished = false;
+
+  const hasSeenLoader = () => {
+    try {
+      return sessionStorage.getItem(loaderSessionKey) === "true";
+    } catch {
+      return false;
+    }
+  };
+
+  const finishLoader = () => {
+    if (loaderFinished) return;
+    loaderFinished = true;
+    loaderTimers.forEach((timer) => window.clearTimeout(timer));
+    loaderProgress.textContent = "100";
+    loaderStage.textContent = "context ready";
+    loaderSteps.forEach((step) => step.classList.add("is-linked"));
+    document.body.classList.remove("loader-active");
+    systemLoader.classList.add("is-leaving");
+    try {
+      sessionStorage.setItem(loaderSessionKey, "true");
+    } catch {
+      // The loader remains functional when storage is unavailable.
+    }
+    window.setTimeout(() => {
+      systemLoader.hidden = true;
+    }, 500);
+  };
+
+  if (reducedMotion.matches || hasSeenLoader()) {
+    finishLoader();
+  } else {
+    document.body.classList.add("loader-active");
+    const loaderStates = [
+      [28, "linking ecosystem"],
+      [63, "routing signals"],
+      [88, "readying portfolio"],
+    ];
+    loaderStates.forEach(([progress, stage], index) => {
+      loaderTimers.push(window.setTimeout(() => {
+        loaderProgress.textContent = String(progress).padStart(2, "0");
+        loaderStage.textContent = stage;
+        loaderSteps[index].classList.add("is-linked");
+      }, 180 + index * 260));
+    });
+    loaderTimers.push(window.setTimeout(finishLoader, 1_180));
+    loaderSkip.addEventListener("click", finishLoader);
+  }
+}
 
 document.querySelector(".theme-toggle").addEventListener("click", () => {
   setTheme(root.dataset.theme === "dark" ? "light" : "dark");
@@ -29,7 +88,6 @@ const header = document.querySelector("[data-header]");
 window.addEventListener("scroll", () => header.classList.toggle("is-scrolled", window.scrollY > 16), { passive: true });
 
 const revealTargets = document.querySelectorAll("[data-reveal]");
-const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const cursorGlow = document.querySelector("[data-cursor-glow]");
 if (cursorGlow && !reducedMotion.matches && window.matchMedia("(hover: hover)").matches) {
   window.addEventListener("pointermove", (event) => {
