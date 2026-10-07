@@ -1,0 +1,20 @@
+{
+  "name": "Subin George — ML infrastructure & PyTorch",
+  "short_name": "Subin George",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090e1b",
+  "theme_color": "#0a1020",
+  "icons": [
+    {
+      "src": "assets/subin-mark-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/subin-mark-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
