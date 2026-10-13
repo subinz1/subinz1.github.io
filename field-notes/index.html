@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Field notes by Subin George on PyTorch, ML infrastructure, CI reliability, and practical machine learning systems." />
+    <meta name="author" content="Subin George" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0a1020" />
+    <link rel="canonical" href="https://subinz1.github.io/field-notes/" />
+    <link rel="icon" href="../assets/subin-mark.svg" type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://subinz1.github.io/field-notes/" />
+    <meta property="og:title" content="Field notes — Subin George" />
+    <meta property="og:description" content="Practical notes on PyTorch, ML infrastructure, CI reliability, and dependable systems." />
+    <title>Field notes — Subin George</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="rhel-ci-enablement/article.js" defer></script>
+  </head>
+  <body class="article-page">
+    <a class="skip-link" href="#field-notes">Skip to field notes</a>
+    <div class="page-glow glow-one" aria-hidden="true"></div>
+    <div class="page-glow glow-two" aria-hidden="true"></div>
+
+    <header class="site-header" data-header>
+      <a class="brand" href="../" aria-label="Subin George home">
+        <img class="brand-mark" src="../assets/subin-mark.svg" alt="" width="32" height="32" />
+        <span class="brand-word">SUBIN</span><span class="brand-slash">/</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="sr-only">Open navigation</span><span></span><span></span>
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="Field notes navigation">
+        <a href="../#work">Portfolio</a>
+        <a href="./" aria-current="page">Field notes</a>
+        <a href="../#contact">Contact</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">
+        <span aria-hidden="true">◐</span>
+      </button>
+    </header>
+
+    <main id="field-notes" class="field-notes section-shell">
+      <header class="article-hero">
+        <p class="eyebrow">Field notes</p>
+        <p class="article-context">PyTorch · ML infrastructure · dependable systems</p>
+        <h1>Practical writing from the work behind the systems.</h1>
+        <p class="article-lede">Context, implementation detail, and the next useful step for engineers working on ML systems and their delivery paths.</p>
+      </header>
+
+      <div class="field-note-grid" aria-label="Field notes">
+        <a class="field-note-card" href="rhel-ci-enablement/">
+          <p class="field-note-meta">01 / Downstream CI</p>
+          <h2>RHEL CI Enablement for PyTorch</h2>
+          <p>How nightly RHEL validation turns an upstream change into a visible compatibility signal.</p>
+          <ul class="tag-list"><li>RHEL 9</li><li>CRCR</li><li>Nightly CI</li></ul>
+          <span class="text-link">Read the field note <span aria-hidden="true">↗</span></span>
+        </a>
+        <a class="field-note-card" href="crcr-onboarding/">
+          <p class="field-note-meta">02 / CRCR onboarding</p>
+          <h2>Onboarding an out-of-tree backend to CRCR</h2>
+          <p>A practical path from allowlisting and dispatch to authenticated results in the CI HUD.</p>
+          <ul class="tag-list"><li>PyTorch</li><li>OIDC</li><li>CI reliability</li></ul>
+          <span class="text-link">Read the onboarding guide <span aria-hidden="true">↗</span></span>
+        </a>
+        <a class="field-note-card" href="rocm-performance-workloads/">
+          <p class="field-note-meta">03 / PyTorch performance</p>
+          <h2>Performance is a systems property</h2>
+          <p>What FP8, MoE, profiling, collectives, and recovery work reveal about dependable PyTorch workloads.</p>
+          <ul class="tag-list"><li>ROCm</li><li>PyTorch</li><li>Distributed training</li></ul>
+          <span class="text-link">Read the performance field note <span aria-hidden="true">↗</span></span>
+        </a>
+        <a class="field-note-card" href="pytorch-contributor-guide/">
+          <p class="field-note-meta">04 / Open-source contribution</p>
+          <h2>Contributing upstream to PyTorch</h2>
+          <p>A guide to scoping a first change, testing it, reading CI, and giving maintainers usable evidence.</p>
+          <ul class="tag-list"><li>PyTorch</li><li>Testing</li><li>Code review</li></ul>
+          <span class="text-link">Read the contributor guide <span aria-hidden="true">↗</span></span>
+        </a>
+        <a class="field-note-card" href="field-ready-computer-vision/">
+          <p class="field-note-meta">05 / Applied machine learning</p>
+          <h2>Accuracy is not the deployment contract</h2>
+          <p>How to connect data, runtime, observability, and human action into a dependable vision system.</p>
+          <ul class="tag-list"><li>Computer vision</li><li>Edge AI</li><li>MLOps</li></ul>
+          <span class="text-link">Read the vision-systems field note <span aria-hidden="true">↗</span></span>
+        </a>
+        <a class="field-note-card" href="hermetic-pytorch-builds/">
+          <p class="field-note-meta">06 / PyTorch release engineering</p>
+          <h2>Day-zero PyTorch wheels without a public-internet dependency</h2>
+          <p>How a hermetic supply chain produces qualified PyTorch release artifacts for internal product teams.</p>
+          <ul class="tag-list"><li>PyTorch</li><li>Hermetic builds</li><li>Supply chain</li></ul>
+          <span class="text-link">Read the hermetic-build field note <span aria-hidden="true">↗</span></span>
+        </a>
+        <a class="field-note-card" href="ci-chain-of-custody/">
+          <p class="field-note-meta">07 / ML infrastructure</p>
+          <h2>A CI result needs a chain of custody</h2>
+          <p>How identity, revision scope, artifacts, terminal states, and policy make downstream results trustworthy.</p>
+          <ul class="tag-list"><li>PyTorch</li><li>OIDC</li><li>CI reliability</li><li>Artifacts</li></ul>
+          <span class="text-link">Read the CI reliability field note <span aria-hidden="true">↗</span></span>
+        </a>
+      </div>
+    </main>
+  </body>
+</html>

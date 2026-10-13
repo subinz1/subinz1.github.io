@@ -4,24 +4,27 @@
     <loc>https://subinz1.github.io/</loc>
   </url>
   <url>
-    <loc>https://subinz1.github.io/rhel-ci-enablement/</loc>
+    <loc>https://subinz1.github.io/field-notes/</loc>
   </url>
   <url>
-    <loc>https://subinz1.github.io/crcr-onboarding/</loc>
+    <loc>https://subinz1.github.io/field-notes/rhel-ci-enablement/</loc>
   </url>
   <url>
-    <loc>https://subinz1.github.io/rocm-performance-workloads/</loc>
+    <loc>https://subinz1.github.io/field-notes/crcr-onboarding/</loc>
   </url>
   <url>
-    <loc>https://subinz1.github.io/pytorch-contributor-guide/</loc>
+    <loc>https://subinz1.github.io/field-notes/rocm-performance-workloads/</loc>
   </url>
   <url>
-    <loc>https://subinz1.github.io/field-ready-computer-vision/</loc>
+    <loc>https://subinz1.github.io/field-notes/pytorch-contributor-guide/</loc>
   </url>
   <url>
-    <loc>https://subinz1.github.io/hermetic-pytorch-builds/</loc>
+    <loc>https://subinz1.github.io/field-notes/field-ready-computer-vision/</loc>
   </url>
   <url>
-    <loc>https://subinz1.github.io/ci-chain-of-custody/</loc>
+    <loc>https://subinz1.github.io/field-notes/hermetic-pytorch-builds/</loc>
+  </url>
+  <url>
+    <loc>https://subinz1.github.io/field-notes/ci-chain-of-custody/</loc>
   </url>
 </urlset>
