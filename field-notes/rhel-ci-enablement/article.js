@@ -1,5 +1,6 @@
 const root = document.documentElement;
 const prefersLight = window.matchMedia("(prefers-color-scheme: light)");
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const storedTheme = localStorage.getItem("theme");
 
 function setTheme(theme) {
@@ -27,6 +28,16 @@ nav?.querySelectorAll("a").forEach((link) => {
     menuToggle?.setAttribute("aria-expanded", "false");
   });
 });
+
+if (!reducedMotion.matches && window.matchMedia("(hover: hover)").matches) {
+  document.querySelectorAll(".field-note-card").forEach((card) => {
+    card.addEventListener("pointermove", (event) => {
+      const bounds = card.getBoundingClientRect();
+      card.style.setProperty("--pointer-x", `${((event.clientX - bounds.left) / bounds.width) * 100}%`);
+      card.style.setProperty("--pointer-y", `${((event.clientY - bounds.top) / bounds.height) * 100}%`);
+    }, { passive: true });
+  });
+}
 
 const header = document.querySelector("[data-header]");
 window.addEventListener(

@@ -97,7 +97,7 @@ if (cursorGlow && !reducedMotion.matches && window.matchMedia("(hover: hover)").
   }, { passive: true });
   window.addEventListener("blur", () => cursorGlow.classList.remove("is-visible"));
 
-  document.querySelectorAll(".project-card, .signal-panel").forEach((element) => {
+  document.querySelectorAll(".project-card, .field-note-card, .signal-panel").forEach((element) => {
     element.addEventListener("pointermove", (event) => {
       const bounds = element.getBoundingClientRect();
       element.style.setProperty("--pointer-x", `${((event.clientX - bounds.left) / bounds.width) * 100}%`);
