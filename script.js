@@ -113,25 +113,6 @@ const sectionObserver = new IntersectionObserver((entries) => {
 
 document.querySelectorAll("main section[id]").forEach((section) => sectionObserver.observe(section));
 
-const filters = document.querySelectorAll("[data-filter]");
-const projects = document.querySelectorAll("[data-project]");
-const filterStatus = document.querySelector("[data-filter-status]");
-filters.forEach((filter) => filter.addEventListener("click", () => {
-  const category = filter.dataset.filter;
-  let shown = 0;
-  filters.forEach((button) => {
-    const selected = button === filter;
-    button.classList.toggle("is-active", selected);
-    button.setAttribute("aria-pressed", String(selected));
-  });
-  projects.forEach((project) => {
-    const visible = category === "all" || project.dataset.project.includes(category);
-    project.classList.toggle("is-hidden", !visible);
-    if (visible) shown += 1;
-  });
-  filterStatus.textContent = category === "all" ? "Showing all projects" : `Showing ${shown} ${category} project${shown === 1 ? "" : "s"}`;
-}));
-
 const toast = document.querySelector("[data-toast]");
 let toastTimeout;
 function showToast(message) {
@@ -162,27 +143,46 @@ shareProfile.addEventListener("click", async () => {
   }
 });
 
-const signalPanel = document.querySelector(".signal-panel");
-const signalReplay = document.querySelector("[data-signal-replay]");
-let signalReplayTimers = [];
-function replaySignalTrace() {
-  signalReplayTimers.forEach((timer) => window.clearTimeout(timer));
-  signalReplayTimers = [];
-  signalPanel.classList.remove("is-replaying");
-  signalPanel.querySelectorAll("[data-signal-step]").forEach((step) => step.classList.remove("is-active"));
-  void signalPanel.offsetWidth;
-  signalPanel.classList.add("is-replaying");
+const systemDeck = document.querySelector("[data-system-deck]");
+if (systemDeck) {
+  const systemTabs = [...systemDeck.querySelectorAll("[data-system-select]")];
+  const systemPanels = [...systemDeck.querySelectorAll("[data-system-panel]")];
 
-  signalPanel.querySelectorAll("[data-signal-step]").forEach((step, index) => {
-    signalReplayTimers.push(window.setTimeout(() => step.classList.add("is-active"), index * 360));
+  const selectSystem = (system, moveFocus = false) => {
+    systemTabs.forEach((tab) => {
+      const selected = tab.dataset.systemSelect === system;
+      tab.classList.toggle("is-selected", selected);
+      tab.setAttribute("aria-selected", String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+      if (selected && moveFocus) tab.focus();
+    });
+
+    systemPanels.forEach((panel) => {
+      const selected = panel.dataset.systemPanel === system;
+      panel.classList.toggle("is-selected", selected);
+      panel.hidden = !selected;
+    });
+  };
+
+  systemTabs.forEach((tab, index) => {
+    tab.addEventListener("click", () => selectSystem(tab.dataset.systemSelect));
+    tab.addEventListener("keydown", (event) => {
+      const lastIndex = systemTabs.length - 1;
+      let nextIndex = null;
+      if (event.key === "ArrowDown" || event.key === "ArrowRight") nextIndex = index === lastIndex ? 0 : index + 1;
+      if (event.key === "ArrowUp" || event.key === "ArrowLeft") nextIndex = index === 0 ? lastIndex : index - 1;
+      if (event.key === "Home") nextIndex = 0;
+      if (event.key === "End") nextIndex = lastIndex;
+      if (nextIndex === null) return;
+      event.preventDefault();
+      selectSystem(systemTabs[nextIndex].dataset.systemSelect, true);
+    });
   });
-  signalReplayTimers.push(window.setTimeout(() => {
-    signalPanel.classList.remove("is-replaying");
-    signalPanel.querySelectorAll("[data-signal-step]").forEach((step) => step.classList.remove("is-active"));
-  }, 2400));
-}
 
-signalReplay.addEventListener("click", replaySignalTrace);
+  document.querySelectorAll("[data-atlas-system]").forEach((link) => {
+    link.addEventListener("click", () => selectSystem(link.dataset.atlasSystem));
+  });
+}
 
 const contactForm = document.querySelector("[data-contact-form]");
 const contactSubmit = document.querySelector("[data-contact-submit]");
