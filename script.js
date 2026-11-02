@@ -88,24 +88,6 @@ const header = document.querySelector("[data-header]");
 window.addEventListener("scroll", () => header.classList.toggle("is-scrolled", window.scrollY > 16), { passive: true });
 
 const revealTargets = document.querySelectorAll("[data-reveal]");
-const cursorGlow = document.querySelector("[data-cursor-glow]");
-if (cursorGlow && !reducedMotion.matches && window.matchMedia("(hover: hover)").matches) {
-  window.addEventListener("pointermove", (event) => {
-    cursorGlow.style.setProperty("--cursor-x", `${event.clientX}px`);
-    cursorGlow.style.setProperty("--cursor-y", `${event.clientY}px`);
-    cursorGlow.classList.add("is-visible");
-  }, { passive: true });
-  window.addEventListener("blur", () => cursorGlow.classList.remove("is-visible"));
-
-  document.querySelectorAll(".project-card, .field-note-card, .signal-panel").forEach((element) => {
-    element.addEventListener("pointermove", (event) => {
-      const bounds = element.getBoundingClientRect();
-      element.style.setProperty("--pointer-x", `${((event.clientX - bounds.left) / bounds.width) * 100}%`);
-      element.style.setProperty("--pointer-y", `${((event.clientY - bounds.top) / bounds.height) * 100}%`);
-    }, { passive: true });
-  });
-}
-
 if ("IntersectionObserver" in window && !reducedMotion.matches) {
   root.classList.add("reveal-ready");
   const revealObserver = new IntersectionObserver((entries) => {

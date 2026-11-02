@@ -1,31 +1,31 @@
 :root {
   color-scheme: dark;
-  --ink: #edf3ff;
-  --muted: #a7b4ca;
-  --subtle: #71809b;
-  --bg: #090e1b;
-  --surface: rgba(19, 29, 50, 0.72);
-  --surface-solid: #121d32;
-  --line: rgba(174, 194, 230, 0.17);
-  --accent: #95f0c9;
-  --accent-strong: #5fcf9f;
-  --violet: #b9a2ff;
+  --ink: #eef0f5;
+  --muted: #a3a9b8;
+  --subtle: #7a8296;
+  --bg: #0b0d14;
+  --surface: #11141c;
+  --surface-solid: #11141c;
+  --line: rgba(238, 240, 245, 0.1);
+  --accent: #70d1bb;
+  --accent-strong: #4cae99;
+  --violet: var(--accent);
   --max: 76rem;
   --header-height: 4.5rem;
 }
 
 [data-theme="light"] {
   color-scheme: light;
-  --ink: #10213d;
-  --muted: #52617b;
-  --subtle: #6e7c93;
-  --bg: #f6f8fc;
-  --surface: rgba(255, 255, 255, 0.75);
+  --ink: #111827;
+  --muted: #4b5565;
+  --subtle: #6b7487;
+  --bg: #f5f7fa;
+  --surface: #ffffff;
   --surface-solid: #ffffff;
-  --line: rgba(46, 68, 111, 0.17);
+  --line: rgba(17, 24, 39, 0.1);
   --accent: #087c55;
   --accent-strong: #006a47;
-  --violet: #7054d9;
+  --violet: var(--accent);
 }
 
 * { box-sizing: border-box; }
@@ -320,3 +320,64 @@ h1 em { color: var(--accent); font-family: ui-serif, Georgia, serif; font-weight
   .field-notes-hero { display: block; }
   .field-note-orbit { margin: 3rem auto 0; width: min(100%, 15rem); }
 }
+
+/* Portfolio visual polish: quiet chrome; the relay trace carries the color. */
+.system-loader::before,
+.page-glow,
+.cursor-glow { display: none; }
+
+h1, h2, h3 { font-weight: 500; }
+.eyebrow,
+.project-meta,
+.career-company,
+.field-note-meta { letter-spacing: .04em; text-transform: none; }
+
+.site-nav .nav-login { border: 0; border-radius: 0; color: var(--muted); margin: 0; padding: 0; }
+.site-nav .nav-login::after { display: block; }
+.site-nav .nav-login:hover { background: transparent; border-color: transparent; color: var(--ink); }
+
+.button { font-weight: 600; transition: background-color .16s, border-color .16s, color .16s, transform .16s; }
+.button:hover { transform: none; }
+.button:active { transform: scale(.98); }
+
+.signal-panel { background: var(--surface-solid); border-radius: 1rem; box-shadow: none; transition: border-color .16s, background-color .16s; }
+.signal-panel:hover { background: var(--surface-solid); border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); box-shadow: none; }
+.signal-panel__top,
+.signal-panel__footer,
+.project-meta { text-transform: none; }
+.signal-replay { border-radius: .4rem; }
+.signal-map { border-style: solid; }
+.signal-node { background: var(--surface-solid); transition: background-color .16s, border-color .16s; }
+.signal-node:hover,
+.signal-node.is-active { background: color-mix(in srgb, var(--accent) 8%, var(--surface-solid)); border-color: var(--accent); box-shadow: none; transform: none; }
+.hero-proof strong { font-variant-numeric: tabular-nums; }
+
+.project-card,
+.field-note-card { background: var(--surface); transition: background-color .16s, border-color .16s; }
+.project-card--feature { background: var(--surface-solid); border-left: 2px solid var(--accent); }
+.project-card:hover,
+.field-note-card:hover,
+.field-note-card:focus-visible { background: color-mix(in srgb, var(--accent) 5%, var(--surface-solid)); border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); box-shadow: none; transform: none; }
+.project-card::after,
+.field-note-card::after,
+.field-notes-index .field-note-card::before { content: none; }
+.text-link--publication { color: var(--accent); }
+
+.talk-card,
+.article-callout { background: var(--surface-solid); border-color: var(--line); border-left: 2px solid var(--accent); }
+.talk-card .eyebrow,
+.talk-card p:not(.eyebrow) { color: var(--muted); }
+
+.field-note-orbit { background: var(--surface-solid); border-color: var(--line); }
+.field-note-orbit::before { content: none; }
+.field-note-orbit__grid,
+.field-note-orbit__ring,
+.field-note-orbit__ring--outer,
+.field-note-orbit__ring--inner { animation: none; border-color: color-mix(in srgb, var(--accent) 42%, var(--line)); }
+.field-note-orbit__node,
+.field-note-orbit__node--one,
+.field-note-orbit__node--two,
+.field-note-orbit__node--three { --node-color: var(--accent); animation: none; box-shadow: none; }
+.field-notes-index .field-note-card { animation: none; }
+
+.reveal-ready [data-reveal] { transform: translateY(.5rem); transition: opacity .38s cubic-bezier(.22, 1, .36, 1), transform .38s cubic-bezier(.22, 1, .36, 1); }
