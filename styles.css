@@ -413,3 +413,37 @@ h1, h2, h3 { font-weight: 500; }
   .article-page .article-hero:not(.field-notes-hero) { padding-left: 1rem; }.article-page .article-aside { border-left: 0; padding-left: 0; }.article-page .article-aside nav a.is-active { margin-left: 0; padding-left: 0; }
   .career-timeline { padding-left: 1.25rem; }.career-timeline > li::before { left: calc(-1.25rem - .27rem); }
 }
+
+/* Recognition is a provenance record; current work is an active engineering board. */
+.recognition { border-top: 1px solid var(--line); padding-block: clamp(4rem, 9vw, 8rem); }
+.recognition-record { align-items: center; background: var(--surface-solid); border: 1px solid var(--line); border-left: 2px solid var(--accent); border-radius: 1rem; display: grid; gap: clamp(1.5rem, 4vw, 4rem); grid-template-columns: minmax(7rem, .32fr) minmax(0, 1fr) minmax(10rem, .28fr); padding: clamp(1.5rem, 4vw, 3rem); }
+.recognition-record__mark { align-content: center; border-right: 1px solid var(--line); display: grid; min-height: 9rem; }
+.recognition-record__mark span { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: clamp(4.5rem, 8vw, 7.5rem); font-weight: 500; letter-spacing: -.1em; line-height: .78; }
+.recognition-record__mark small { color: var(--accent); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .7rem; margin-top: .9rem; }
+.recognition-record__body .eyebrow { margin-bottom: 1.3rem; }
+.recognition-record__body h2 { font-size: clamp(2rem, 4vw, 3.7rem); letter-spacing: -.06em; line-height: .98; margin-bottom: 1rem; max-width: 13ch; }
+.recognition-record__body > p { color: var(--muted); line-height: 1.65; margin-bottom: 1rem; max-width: 39rem; }
+.recognition-record__note { border-left: 1px solid var(--line); color: var(--subtle); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .68rem; line-height: 1.7; margin: 0; padding-left: 1rem; }
+
+.current-work { border-top: 1px solid var(--line); padding-block: clamp(4rem, 9vw, 8rem); }
+.current-work__heading { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr); margin-bottom: 3rem; }
+.current-work__heading .eyebrow { grid-column: 1 / -1; margin-bottom: 0; }
+.current-work__heading h2 { font-size: clamp(2.4rem, 5vw, 5.3rem); letter-spacing: -.07em; line-height: .95; margin: 0; max-width: 11ch; }
+.current-work__heading > p:not(.eyebrow) { align-self: end; color: var(--muted); line-height: 1.7; margin: 0; max-width: 38rem; }
+.work-tracks { border-top: 1px solid var(--line); list-style: none; margin: 0; padding: 0; }
+.work-tracks li { align-items: start; border-bottom: 1px solid var(--line); display: grid; gap: 1rem; grid-template-columns: 3rem minmax(0, 1fr) minmax(8rem, .3fr); padding: 1.25rem 0; }
+.work-tracks > li > span:first-child { color: var(--accent); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .68rem; padding-top: .3rem; }
+.work-tracks strong { font-size: 1rem; font-weight: 600; }
+.work-tracks p { color: var(--muted); line-height: 1.55; margin: .3rem 0 0; max-width: 40rem; }
+.work-tracks__type { color: var(--subtle); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .65rem; line-height: 1.45; padding-top: .3rem; text-align: right; }
+.current-work__link { display: inline-block; margin-top: 1.25rem; }
+
+@media (max-width: 760px) {
+  .recognition-record { grid-template-columns: 1fr; }
+  .recognition-record__mark { border-bottom: 1px solid var(--line); border-right: 0; min-height: auto; padding-bottom: 1.25rem; }
+  .recognition-record__note { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; padding-top: 1rem; }
+  .current-work__heading { display: block; }
+  .current-work__heading > p:not(.eyebrow) { margin-top: 1rem; }
+  .work-tracks li { grid-template-columns: 2.5rem 1fr; }
+  .work-tracks__type { grid-column: 2; padding-top: 0; text-align: left; }
+}
