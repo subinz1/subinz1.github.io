@@ -108,7 +108,7 @@
     <main id="main">
       <section id="home" class="hero section-shell">
         <div class="hero-copy" data-reveal>
-          <p class="eyebrow"><span class="status-dot"></span> Systems atlas / 01</p>
+          <p class="eyebrow"><span class="status-dot"></span> Evidence chain / 01</p>
           <h1>I build the feedback loops that keep PyTorch compatible.</h1>
           <p class="hero-lede">
             I'm Subin George Malana, a software engineer and PyTorch contributor. I build dependable
@@ -116,33 +116,25 @@
             vision to the infrastructure that keeps upstream changes and hardware backends moving together.
           </p>
           <div class="hero-actions">
-            <a class="button button-primary" href="#work">Enter the systems map <span aria-hidden="true">↘</span></a>
+            <a class="button button-primary" href="#work">Inspect selected systems <span aria-hidden="true">↘</span></a>
             <button class="button button-quiet" type="button" data-share-profile>Share this profile <span aria-hidden="true">↗</span></button>
           </div>
         </div>
 
-        <div class="atlas-panel" data-reveal data-delay="120">
-          <div class="atlas-panel__top">
-            <span>Professional systems map</span>
-            <span>select a route</span>
+        <aside class="evidence-record" aria-label="Engineering reliability record" data-reveal data-delay="120">
+          <div class="evidence-record__top"><span>Reliability record</span><span>01 / 04</span></div>
+          <div class="evidence-record__claim">
+            <span>Compatibility is not a status badge</span>
+            <strong>It is a result with context, provenance, and an owner.</strong>
           </div>
-          <div class="atlas-map" aria-label="Interactive map linking Subin George Malana's systems work">
-            <svg viewBox="0 0 600 440" preserveAspectRatio="none" aria-hidden="true">
-              <path d="M300 218 C210 145 167 118 96 94" />
-              <path d="M300 218 C390 140 437 118 520 96" />
-              <path d="M300 218 C173 248 126 286 88 343" />
-              <path d="M300 218 C418 252 468 283 520 342" />
-              <path d="M300 218 V73" />
-            </svg>
-            <div class="atlas-anchor" aria-hidden="true"><span>SGM</span><small>systems engineer</small></div>
-            <a class="atlas-node atlas-node--pytorch" href="#work" data-atlas-system="upstream"><strong>PyTorch</strong><small>upstream contribution</small></a>
-            <a class="atlas-node atlas-node--crcr" href="#work" data-atlas-system="crcr"><strong>CRCR</strong><small>compatibility relay</small></a>
-            <a class="atlas-node atlas-node--rhel" href="#work" data-atlas-system="rhel"><strong>RHEL CI</strong><small>downstream validation</small></a>
-            <a class="atlas-node atlas-node--builds" href="#work" data-atlas-system="builds"><strong>Hermetic builds</strong><small>release confidence</small></a>
-            <a class="atlas-node atlas-node--notes" href="#field-notes"><strong>Field notes</strong><small>shared practice</small></a>
-          </div>
-          <p class="atlas-panel__footer">Source → validation → evidence → action</p>
-        </div>
+          <ol class="evidence-record__steps">
+            <li><span>01</span><div><strong>Change context</strong><p>Preserve the revision, trigger, and intended scope.</p></div></li>
+            <li><span>02</span><div><strong>Target validation</strong><p>Run the relevant build and tests in the real environment.</p></div></li>
+            <li><span>03</span><div><strong>Trusted evidence</strong><p>Verify identity, terminal attempt, and linked artifacts.</p></div></li>
+            <li><span>04</span><div><strong>Actionable result</strong><p>Surface the evidence where a maintainer can make a decision.</p></div></li>
+          </ol>
+          <p class="evidence-record__footer"><span>Traceable by design</span><span>event → owner</span></p>
+        </aside>
 
         <div class="hero-proof" aria-label="Selected contribution highlights" data-reveal data-delay="180">
           <div><strong data-pr-count="test-infra">76+</strong><span>test-infra contributions</span></div>
@@ -196,7 +188,7 @@
 
       <section id="work" class="work section-shell">
         <div class="section-heading" data-reveal>
-          <div><p class="eyebrow">Systems map / 02</p><h2>Engineering work with a clear path from signal to owner.</h2></div>
+          <div><p class="eyebrow">Selected systems / 02</p><h2>Engineering work with a clear path from signal to owner.</h2></div>
           <p class="section-note">Select a dossier to inspect the system</p>
         </div>
         <div class="system-deck" data-system-deck data-reveal>

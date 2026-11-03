@@ -179,9 +179,6 @@ if (systemDeck) {
     });
   });
 
-  document.querySelectorAll("[data-atlas-system]").forEach((link) => {
-    link.addEventListener("click", () => selectSystem(link.dataset.atlasSystem));
-  });
 }
 
 const contactForm = document.querySelector("[data-contact-form]");
