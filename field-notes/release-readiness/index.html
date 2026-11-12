@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A practical model for release readiness: connect immutable source, artifacts, validation evidence, owners, and explicit decisions before calling a software release ready." />
+    <meta name="author" content="Subin George Malana" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0a1020" />
+    <link rel="canonical" href="https://subinz1.github.io/field-notes/release-readiness/" />
+    <link rel="icon" href="../../assets/subin-mark.svg" type="image/svg+xml" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://subinz1.github.io/field-notes/release-readiness/" />
+    <meta property="og:title" content="Release readiness is an evidence system" />
+    <meta property="og:description" content="How to connect source, artifacts, validation evidence, owners, and decisions into a release state an engineering team can trust." />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Release readiness is an evidence system" />
+    <meta name="twitter:description" content="A practical model for making release state visible, evidence-backed, and actionable." />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Release readiness is an evidence system",
+        "description": "A practical model for connecting immutable source, artifacts, validation evidence, owners, and decisions before calling a software release ready.",
+        "author": { "@type": "Person", "name": "Subin George Malana", "url": "https://subinz1.github.io/" },
+        "mainEntityOfPage": "https://subinz1.github.io/field-notes/release-readiness/",
+        "about": ["PyTorch", "Release engineering", "Continuous integration", "Software delivery", "ML infrastructure"]
+      }
+    </script>
+    <title>Release readiness is an evidence system — a field note</title>
+    <link rel="stylesheet" href="../../styles.css" />
+    <script src="../rhel-ci-enablement/article.js" defer></script>
+  </head>
+  <body class="article-page">
+    <a class="skip-link" href="#article">Skip to article</a>
+
+    <header class="site-header" data-header>
+      <a class="brand" href="../../" aria-label="Subin George Malana home">
+        <img class="brand-mark" src="../../assets/subin-mark.svg" alt="" width="32" height="32" />
+        <span class="brand-word">SUBIN</span><span class="brand-slash">/</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="sr-only">Open navigation</span><span></span><span></span>
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="Article navigation">
+        <a href="../../#work">Portfolio</a>
+        <a href="../../#recognition">Recognition</a>
+        <a href="../">Field notes</a>
+        <a href="https://pytorch.org/" target="_blank" rel="noreferrer">PyTorch</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">
+        <span aria-hidden="true">◐</span>
+      </button>
+    </header>
+
+    <main id="article">
+      <header class="article-hero article-shell">
+        <p class="eyebrow">Field note / Release engineering</p>
+        <p class="article-context">PyTorch · CI evidence · artifacts · release operations</p>
+        <h1>Release readiness is an evidence system.</h1>
+        <p class="article-lede">
+          A release is not ready because a dashboard happens to be green. It is ready when its
+          source, artifacts, validation results, owners, and outstanding decisions all describe
+          the same release state—and another engineer can inspect that state without reconstructing it from chat and logs.
+        </p>
+        <div class="article-byline">
+          <span>By Subin George Malana</span><span aria-hidden="true">•</span>
+          <span>For release, platform, and ML infrastructure engineers</span>
+        </div>
+        <ul class="tag-list article-tags" aria-label="Topics">
+          <li>Release engineering</li><li>CI reliability</li><li>Artifacts</li><li>PyTorch</li>
+        </ul>
+      </header>
+
+      <section class="article-layout article-shell" aria-label="Article content">
+        <aside class="article-aside">
+          <p class="eyebrow">In this note</p>
+          <nav aria-label="On this page">
+            <a href="#problem">A task list is not a release model</a>
+            <a href="#release-object">Define one release object</a>
+            <a href="#evidence">Make every state evidence-backed</a>
+            <a href="#visibility">Separate visibility from orchestration</a>
+            <a href="#exceptions">Treat exceptions as decisions</a>
+            <a href="#pilot">Start with a narrow pilot</a>
+            <a href="#checklist">Operating checklist</a>
+          </nav>
+        </aside>
+
+        <article class="article-prose">
+          <p class="article-intro" id="problem">
+            Releases cross repositories, build systems, package destinations, test matrices, and
+            humans with different responsibilities. A release engineer can know the current state
+            from experience while partner teams only see a spreadsheet, a late status message, or
+            a failing job without context. That knowledge gap is itself a reliability problem.
+          </p>
+          <p class="article-intro">
+            The practical goal is not to replace every release workflow. It is to make the release
+            state visible and decision-ready: what is being released, which evidence is current,
+            what is blocked, who owns the next action, and why an exception is allowed.
+          </p>
+          <div class="article-pullquote">
+            <p>A release portal should not manufacture truth. It should connect the evidence and decisions that already make a release safe.</p>
+          </div>
+
+          <section id="release-object">
+            <p class="eyebrow">01 / Define one release object</p>
+            <h2>Name the thing every workflow is talking about.</h2>
+            <p>
+              A release dashboard becomes unreliable when it silently joins results from different
+              branches, tags, package candidates, or test windows. The first contract is a release
+              object with immutable identifiers: version, source revision, release branch, release
+              candidate or build identifier, and the intended artifact channel.
+            </p>
+            <p>
+              The object does not need to be a new database on day one. It can be a versioned
+              configuration record that existing workflows receive as input. What matters is that
+              a binary build, a validation result, and a release decision can each be traced back
+              to the same named target.
+            </p>
+            <pre class="article-code"><code>release target
+→ version: 2.x.y-rcN
+→ source: immutable commit SHA
+→ branch: release/2.x
+→ candidate: build or package identifier
+→ channel: staging, validation, or production</code></pre>
+            <p>
+              This also prevents a common reporting mistake: showing the latest successful result
+              when it belongs to an earlier candidate. A useful release view selects the intended
+              source and candidate first, then shows the final evidence only for that target.
+            </p>
+          </section>
+
+          <section id="evidence">
+            <p class="eyebrow">02 / Make every state evidence-backed</p>
+            <h2>“Complete” needs a result, not a checked box.</h2>
+            <p>
+              A step is meaningful only when it has a current outcome, a link to its evidence, an
+              owner, and a time window. For a build, that may be a workflow URL, artifact digest,
+              target platform, and terminal status. For a validation stage, it may be a matrix
+              summary with direct paths to the failing jobs and their logs.
+            </p>
+            <ol class="article-steps">
+              <li><strong>Target.</strong><span>The step states which release object, platform, and channel it evaluates.</span></li>
+              <li><strong>Evidence.</strong><span>The result links to a stable workflow, artifact, report, or other inspectable source.</span></li>
+              <li><strong>Terminal state.</strong><span>Success, failure, timeout, cancellation, and missing evidence remain distinct.</span></li>
+              <li><strong>Freshness.</strong><span>The system records when the evidence was produced and whether it belongs to the selected candidate.</span></li>
+              <li><strong>Owner.</strong><span>An engineering group or person is explicit when a result needs a decision or follow-up.</span></li>
+            </ol>
+            <p>
+              Freshness is especially important for CI-driven releases. A green result from an old
+              release candidate should be useful history, not proof that the current candidate is
+              ready. Keeping identity and terminal attempts intact is what makes the display
+              operationally trustworthy.
+            </p>
+          </section>
+
+          <section id="visibility">
+            <p class="eyebrow">03 / Separate visibility from orchestration</p>
+            <h2>Read many systems; do not rebuild them all.</h2>
+            <p>
+              A good release portal is usually read-only. It reads durable sources such as a
+              release configuration, CI results, artifact indexes, tracker issues, and
+              announcements. The portal gives release engineers one view of the state, while the
+              existing workflows remain responsible for builds, tests, publication, and long-running
+              orchestration.
+            </p>
+            <p>
+              This boundary keeps a first implementation small and safe. It avoids turning a
+              dashboard into a second execution engine with partially duplicated permissions,
+              retries, and recovery logic. When an action is needed, the portal can link to the
+              existing workflow or create a scoped handoff instead of hiding control behind an
+              opaque button.
+            </p>
+            <div class="article-pullquote">
+              <p>Visibility accelerates coordination when it preserves the source of truth instead of competing with it.</p>
+            </div>
+          </section>
+
+          <section id="exceptions">
+            <p class="eyebrow">04 / Treat exceptions as decisions</p>
+            <h2>A release can move with risk, but never with invisible risk.</h2>
+            <p>
+              Not every release is fully green. A platform may be temporarily unavailable, a
+              non-blocking test may need investigation, or a partner validation may arrive after
+              the primary artifacts are ready. The unsafe part is not the exception; it is losing
+              the record of who accepted it, what evidence was considered, and what follow-up is
+              required.
+            </p>
+            <p>
+              Keep operational observations separate from release decisions. A flaky test or a
+              temporary protection signal describes measured health. A waiver, approval, or
+              publication decision changes what the release team is choosing to do. They need
+              different timestamps, owners, links, and retention rules.
+            </p>
+            <ol class="article-steps">
+              <li><strong>Observation.</strong><span>Record the failure or missing evidence with its selected release target.</span></li>
+              <li><strong>Assessment.</strong><span>State the scope, impact, and proposed mitigation in a reviewable place.</span></li>
+              <li><strong>Decision.</strong><span>Capture the approver, rationale, expiry or follow-up, and links to the evidence.</span></li>
+              <li><strong>Resolution.</strong><span>Keep the final corrective action connected to the original release record.</span></li>
+            </ol>
+          </section>
+
+          <section id="pilot">
+            <p class="eyebrow">05 / Start with a narrow pilot</p>
+            <h2>Prove the data contract before automating the release.</h2>
+            <p>
+              The first release view should cover one candidate path end to end: source reference,
+              build status, artifact availability, one validation matrix, and the linked release
+              decision. This exposes the actual integration gaps—missing identifiers, unstable
+              artifact links, unowned failures, or results that cannot be associated with a
+              candidate—before the portal expands to every platform and release phase.
+            </p>
+            <p>
+              Automation should follow that understanding. Start by reducing manual collection and
+              making blockers visible. Only then automate safe, well-understood transitions with
+              clear rollback and ownership. A visible, accurate release state is already a major
+              operational improvement.
+            </p>
+          </section>
+
+          <section id="checklist" class="article-callout" aria-labelledby="checklist-title">
+            <p class="eyebrow">Release-readiness checklist</p>
+            <h2 id="checklist-title">Before calling a release ready, make these facts inspectable.</h2>
+            <ol class="article-steps">
+              <li><strong>One release target.</strong><span>Version, source SHA, branch, candidate identifier, and channel are explicit.</span></li>
+              <li><strong>Current artifacts.</strong><span>Artifacts are linked to that target and available through the intended distribution path.</span></li>
+              <li><strong>Fresh validation.</strong><span>Build and test evidence belongs to the selected candidate, not merely a prior successful run.</span></li>
+              <li><strong>Honest status.</strong><span>Failures, timeouts, cancellations, and missing evidence do not collapse into a generic green state.</span></li>
+              <li><strong>Clear ownership.</strong><span>Every blocker and next step has an accountable team or person.</span></li>
+              <li><strong>Durable decisions.</strong><span>Approvals and exceptions retain their evidence, rationale, and follow-up.</span></li>
+            </ol>
+          </section>
+
+          <section id="sources">
+            <p class="eyebrow">Related reading</p>
+            <h2>Where this model connects</h2>
+            <ul class="article-steps">
+              <li><strong>Hermetic PyTorch builds.</strong><span><a href="../hermetic-pytorch-builds/">Day-zero PyTorch wheels without a public-internet dependency</a> — preparing reproducible, qualified release artifacts.</span></li>
+              <li><strong>CI chain of custody.</strong><span><a href="../ci-chain-of-custody/">A CI result needs a chain of custody</a> — preserving identity, terminal truth, and evidence for downstream results.</span></li>
+              <li><strong>CRCR onboarding.</strong><span><a href="../crcr-onboarding/">Onboarding an out-of-tree backend to CRCR</a> — a concrete example of compatibility evidence flowing between systems.</span></li>
+            </ul>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <footer class="article-footer article-shell">
+      <span>Release readiness · field note</span>
+      <a href="../">Back to field notes <span aria-hidden="true">↖</span></a>
+    </footer>
+  </body>
+</html>
