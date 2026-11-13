@@ -570,3 +570,122 @@ h1 { font-size: clamp(3.45rem, 6.4vw, 6.8rem); font-weight: 500; letter-spacing:
   .recognition-record { padding-block: 1.5rem; }
   .recognition-record__mark { border-right: 0; }
 }
+
+/* Portfolio glass exploration: depth comes from translucent instrument surfaces, not effects. */
+.portfolio-page {
+  --glass-surface: rgba(18, 24, 36, .64);
+  --glass-raised: rgba(29, 37, 52, .7);
+  --glass-line: rgba(222, 235, 242, .13);
+  background-color: #080c13;
+  background-image:
+    radial-gradient(ellipse 60% 36% at 86% -6%, rgba(74, 151, 181, .2), transparent 72%),
+    radial-gradient(ellipse 50% 30% at 2% 66%, rgba(79, 173, 151, .1), transparent 76%);
+  background-attachment: fixed;
+}
+
+[data-theme="light"] .portfolio-page {
+  --glass-surface: rgba(255, 255, 255, .7);
+  --glass-raised: rgba(255, 255, 255, .86);
+  --glass-line: rgba(31, 47, 61, .13);
+  background-color: #eef3f6;
+  background-image:
+    radial-gradient(ellipse 60% 36% at 86% -6%, rgba(102, 181, 205, .2), transparent 72%),
+    radial-gradient(ellipse 50% 30% at 2% 66%, rgba(91, 185, 157, .1), transparent 76%);
+}
+
+.portfolio-page .site-header {
+  background: color-mix(in srgb, var(--glass-surface) 84%, transparent);
+  border-bottom-color: var(--glass-line);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .04);
+  -webkit-backdrop-filter: blur(20px) saturate(135%);
+  backdrop-filter: blur(20px) saturate(135%);
+}
+
+.portfolio-page .site-header.is-scrolled {
+  background: color-mix(in srgb, var(--glass-raised) 88%, transparent);
+}
+
+.portfolio-page .evidence-record,
+.portfolio-page .system-dossier,
+.portfolio-page .project-card,
+.portfolio-page .field-note-card,
+.portfolio-page .career-card,
+.portfolio-page .contact-form,
+.portfolio-page .talk-card {
+  background: var(--glass-surface);
+  border-color: var(--glass-line);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 18px 48px rgba(1, 5, 12, .14);
+  -webkit-backdrop-filter: blur(18px) saturate(125%);
+  backdrop-filter: blur(18px) saturate(125%);
+}
+
+.portfolio-page .evidence-record,
+.portfolio-page .system-dossier,
+.portfolio-page .talk-card {
+  background: linear-gradient(145deg, color-mix(in srgb, var(--glass-raised) 82%, transparent), var(--glass-surface));
+}
+
+.portfolio-page .hero-proof {
+  background: color-mix(in srgb, var(--glass-surface) 88%, transparent);
+  border: 1px solid var(--glass-line);
+  border-radius: .75rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 16px 44px rgba(1, 5, 12, .1);
+  overflow: visible;
+  padding: 0 1.25rem 1.25rem;
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  backdrop-filter: blur(14px) saturate(120%);
+}
+
+.portfolio-page .hero-proof > div {
+  border-color: var(--glass-line);
+}
+
+.portfolio-page .activity-popover {
+  background: var(--glass-raised);
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--glass-line));
+  border-radius: .6rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 20px 48px rgba(1, 5, 12, .24);
+  -webkit-backdrop-filter: blur(20px) saturate(130%);
+  backdrop-filter: blur(20px) saturate(130%);
+}
+
+.portfolio-page .button-quiet,
+.portfolio-page .filter,
+.portfolio-page .tag-list li,
+.portfolio-page .site-nav .nav-login {
+  background: color-mix(in srgb, var(--glass-surface) 86%, transparent);
+  border-color: var(--glass-line);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.portfolio-page .button-quiet:hover,
+.portfolio-page .filter:hover,
+.portfolio-page .filter.is-active,
+.portfolio-page .site-nav .nav-login:hover {
+  background: color-mix(in srgb, var(--glass-raised) 84%, transparent);
+}
+
+.portfolio-page .project-card--feature {
+  background: linear-gradient(145deg, color-mix(in srgb, var(--glass-raised) 72%, transparent), var(--glass-surface));
+}
+
+.portfolio-page .recognition-record {
+  background: color-mix(in srgb, var(--glass-surface) 72%, transparent);
+  border: 1px solid var(--glass-line);
+  border-radius: .75rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07);
+  padding: clamp(1.5rem, 4vw, 3rem);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  backdrop-filter: blur(16px) saturate(120%);
+}
+
+.portfolio-page .work-tracks li:hover {
+  background: color-mix(in srgb, var(--glass-surface) 82%, transparent);
+}
+
+@media (max-width: 760px) {
+  .portfolio-page { background-attachment: scroll; }
+  .portfolio-page .hero-proof { border-radius: .65rem; padding: 0 1rem 1rem; }
+  .portfolio-page .recognition-record { padding: 1.5rem; }
+}
