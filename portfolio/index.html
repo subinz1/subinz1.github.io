@@ -66,7 +66,7 @@
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header" data-header>
       <a class="brand" href="#home" aria-label="Subin George Malana home">
-        <img class="brand-mark" src="assets/subin-mark.svg" alt="" width="32" height="32" />
+        <span class="brand-mark brand-mark--trace" aria-hidden="true">S</span>
         <span class="brand-word">SUBIN</span><span class="brand-slash">/</span>
       </a>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
@@ -89,11 +89,12 @@
     <main id="main">
       <section id="home" class="hero section-shell">
         <div class="hero-copy" data-reveal>
-          <p class="eyebrow"><span class="status-dot"></span> PyTorch systems engineering</p>
-          <h1>Reliable work leaves a useful record.</h1>
+          <p class="eyebrow"><span class="status-dot"></span> ML infrastructure / PyTorch ecosystem</p>
+          <h1>I turn upstream change into reliable compatibility evidence.</h1>
           <p class="hero-lede">
-            I build the CI, release, and developer-tooling handoffs that help distributed teams understand a
-            result and act on it—across PyTorch, real hardware, and operating environments.
+            I am Subin George Malana, a software engineer and PyTorch contributor building CI platforms,
+            hermetic release paths, and developer tooling for teams that extend PyTorch across real hardware
+            and operating environments.
           </p>
           <div class="hero-actions">
             <a class="button button-primary" href="#work">View selected systems <span aria-hidden="true">↘</span></a>
@@ -102,57 +103,57 @@
         </div>
 
         <aside class="evidence-record" aria-label="Engineering reliability record" data-reveal data-delay="120">
-          <div class="evidence-record__window-bar"><span>Selected operating record</span><span>Public system</span></div>
+          <div class="evidence-record__top"><span>Evidence chain</span><span>01 — 04</span></div>
           <div class="evidence-record__claim">
-            <span>Current focus / CRCR</span>
-            <strong>Bring downstream evidence into the upstream decision.</strong>
-            <p>CRCR coordinates authenticated CI results from hardware partners while preserving the artifact trail behind a pass or failure.</p>
+            <span>Reliable CI is explainable</span>
+            <strong>From an upstream revision to a decision a maintainer can trust.</strong>
           </div>
           <ol class="evidence-record__steps">
-            <li><span>01</span><div><strong>Dispatch the change with enough context</strong><p>Keep the revision, trigger, and intended scope connected.</p></div><em>identity</em></li>
-            <li><span>02</span><div><strong>Validate in the environment that matters</strong><p>Exercise the build and tests that answer the compatibility question.</p></div><em>coverage</em></li>
-            <li><span>03</span><div><strong>Keep outcomes, attempts, and artifacts connected</strong><p>Make the terminal result independently explainable.</p></div><em>provenance</em></li>
-            <li><span>04</span><div><strong>Surface the result where a maintainer decides</strong><p>Turn evidence into a confident next action.</p></div><em>action</em></li>
+            <li><span>01</span><div><strong>Upstream change</strong><p>Capture the revision, trigger, and intended scope.</p></div></li>
+            <li><span>02</span><div><strong>Target validation</strong><p>Exercise the right build and tests in the real environment.</p></div></li>
+            <li><span>03</span><div><strong>Result provenance</strong><p>Keep identity, terminal attempt, and artifacts together.</p></div></li>
+            <li><span>04</span><div><strong>Maintainer action</strong><p>Place the evidence where a confident decision can happen.</p></div></li>
           </ol>
-          <div class="hero-proof" aria-label="Selected contribution highlights">
-            <div class="hero-proof__heading"><span>Contribution record</span><span>2026</span></div>
-            <div class="activity-metric" data-activity-card>
-              <div class="activity-metric__value">
-                <strong data-activity-total="test-infra">233+</strong>
-                <button class="activity-metric__trigger" type="button" aria-controls="test-infra-activity-detail" aria-expanded="false" aria-label="View pytorch/test-infra activity breakdown" data-activity-trigger="test-infra" data-activity-target="test-infra-activity-detail"><span aria-hidden="true">View split ↘</span></button>
-              </div>
-              <span>pytorch/test-infra activity</span>
-              <div class="activity-popover" id="test-infra-activity-detail" role="tooltip" data-activity-popover>
-                <p>pytorch/test-infra activity</p>
-                <dl>
-                  <div><dt>Authored PRs</dt><dd data-activity-count="test-infra-prs">82</dd></div>
-                  <div><dt>Issues opened</dt><dd data-activity-count="test-infra-issues">12</dd></div>
-                  <div><dt>PRs reviewed</dt><dd data-activity-count="test-infra-reviews">45</dd></div>
-                  <div><dt>Discussion threads joined</dt><dd data-activity-count="test-infra-comments">94</dd></div>
-                </dl>
-                <small>Measures are additive and may involve the same PR or issue.</small>
-              </div>
-            </div>
-            <div class="activity-metric" data-activity-card>
-              <div class="activity-metric__value">
-                <strong data-activity-total="pytorch">129+</strong>
-                <button class="activity-metric__trigger" type="button" aria-controls="pytorch-activity-detail" aria-expanded="false" aria-label="View pytorch/pytorch activity breakdown" data-activity-trigger="pytorch" data-activity-target="pytorch-activity-detail"><span aria-hidden="true">View split ↘</span></button>
-              </div>
-              <span>pytorch/pytorch activity</span>
-              <div class="activity-popover" id="pytorch-activity-detail" role="tooltip" data-activity-popover>
-                <p>pytorch/pytorch activity</p>
-                <dl>
-                  <div><dt>Authored PRs</dt><dd data-activity-count="pytorch-prs">49</dd></div>
-                  <div><dt>Issues opened</dt><dd data-activity-count="pytorch-issues">16</dd></div>
-                  <div><dt>PRs reviewed</dt><dd data-activity-count="pytorch-reviews">5</dd></div>
-                  <div><dt>Discussion threads joined</dt><dd data-activity-count="pytorch-comments">59</dd></div>
-                </dl>
-                <small>Measures are additive and may involve the same PR or issue.</small>
-              </div>
-            </div>
-            <div><strong>L1–L4</strong><span>integration trust model</span></div>
-          </div>
+          <p class="evidence-record__footer"><span>signal → evidence → action</span><span>operated in public</span></p>
         </aside>
+
+        <div class="hero-proof" aria-label="Selected contribution highlights" data-reveal data-delay="180">
+          <div class="activity-metric" data-activity-card>
+            <div class="activity-metric__value">
+              <strong data-activity-total="test-infra">233+</strong>
+              <button class="activity-metric__trigger" type="button" aria-controls="test-infra-activity-detail" aria-expanded="false" aria-label="View pytorch/test-infra activity breakdown" data-activity-trigger="test-infra" data-activity-target="test-infra-activity-detail"><span aria-hidden="true">View split ↘</span></button>
+            </div>
+            <span>pytorch/test-infra activity</span>
+            <div class="activity-popover" id="test-infra-activity-detail" role="tooltip" data-activity-popover>
+              <p>pytorch/test-infra activity</p>
+              <dl>
+                <div><dt>Authored PRs</dt><dd data-activity-count="test-infra-prs">82</dd></div>
+                <div><dt>Issues opened</dt><dd data-activity-count="test-infra-issues">12</dd></div>
+                <div><dt>PRs reviewed</dt><dd data-activity-count="test-infra-reviews">45</dd></div>
+                <div><dt>Discussion threads joined</dt><dd data-activity-count="test-infra-comments">94</dd></div>
+              </dl>
+              <small>Measures are additive and may involve the same PR or issue.</small>
+            </div>
+          </div>
+          <div class="activity-metric" data-activity-card>
+            <div class="activity-metric__value">
+              <strong data-activity-total="pytorch">129+</strong>
+              <button class="activity-metric__trigger" type="button" aria-controls="pytorch-activity-detail" aria-expanded="false" aria-label="View pytorch/pytorch activity breakdown" data-activity-trigger="pytorch" data-activity-target="pytorch-activity-detail"><span aria-hidden="true">View split ↘</span></button>
+            </div>
+            <span>pytorch/pytorch activity</span>
+            <div class="activity-popover" id="pytorch-activity-detail" role="tooltip" data-activity-popover>
+              <p>pytorch/pytorch activity</p>
+              <dl>
+                <div><dt>Authored PRs</dt><dd data-activity-count="pytorch-prs">49</dd></div>
+                <div><dt>Issues opened</dt><dd data-activity-count="pytorch-issues">16</dd></div>
+                <div><dt>PRs reviewed</dt><dd data-activity-count="pytorch-reviews">5</dd></div>
+                <div><dt>Discussion threads joined</dt><dd data-activity-count="pytorch-comments">59</dd></div>
+              </dl>
+              <small>Measures are additive and may involve the same PR or issue.</small>
+            </div>
+          </div>
+          <div><strong>L1–L4</strong><span>integration trust model</span></div>
+        </div>
       </section>
 
       <section id="about" class="bio section-shell" data-reveal>
