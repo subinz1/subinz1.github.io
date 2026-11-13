@@ -143,6 +143,33 @@ shareProfile.addEventListener("click", async () => {
   }
 });
 
+const activityCards = document.querySelectorAll("[data-activity-card]");
+const closeActivityPopovers = () => {
+  activityCards.forEach((card) => {
+    card.classList.remove("is-open");
+    card.querySelector("[data-activity-trigger]").setAttribute("aria-expanded", "false");
+  });
+};
+
+activityCards.forEach((card) => {
+  const trigger = card.querySelector("[data-activity-trigger]");
+  trigger.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const open = !card.classList.contains("is-open");
+    closeActivityPopovers();
+    card.classList.toggle("is-open", open);
+    trigger.setAttribute("aria-expanded", String(open));
+  });
+});
+
+document.addEventListener("click", (event) => {
+  if (!event.target.closest("[data-activity-card]")) closeActivityPopovers();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeActivityPopovers();
+});
+
 const systemDeck = document.querySelector("[data-system-deck]");
 if (systemDeck) {
   const systemTabs = [...systemDeck.querySelectorAll("[data-system-select]")];

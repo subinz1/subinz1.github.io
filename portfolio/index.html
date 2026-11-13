@@ -118,8 +118,38 @@
         </aside>
 
         <div class="hero-proof" aria-label="Selected contribution highlights" data-reveal data-delay="180">
-          <div><strong data-pr-count="test-infra">82+</strong><span>test-infra contributions</span></div>
-          <div><strong data-pr-count="pytorch">49+</strong><span>PyTorch contributions</span></div>
+          <div class="activity-metric" data-activity-card>
+            <strong data-activity-total="test-infra">233+</strong><span>test-infra activity</span>
+            <button class="activity-metric__trigger" type="button" aria-expanded="false" aria-describedby="test-infra-activity-detail" data-activity-trigger="test-infra" data-activity-target="test-infra-activity-detail">
+              <span aria-hidden="true">i</span><span class="sr-only">Show test-infra activity breakdown</span>
+            </button>
+            <div class="activity-popover" id="test-infra-activity-detail" role="tooltip" data-activity-popover>
+              <p>test-infra activity</p>
+              <dl>
+                <div><dt>Authored PRs</dt><dd data-activity-count="test-infra-prs">82</dd></div>
+                <div><dt>Issues opened</dt><dd data-activity-count="test-infra-issues">12</dd></div>
+                <div><dt>PRs reviewed</dt><dd data-activity-count="test-infra-reviews">45</dd></div>
+                <div><dt>Discussion threads joined</dt><dd data-activity-count="test-infra-comments">94</dd></div>
+              </dl>
+              <small>Measures are additive and may involve the same PR or issue.</small>
+            </div>
+          </div>
+          <div class="activity-metric" data-activity-card>
+            <strong data-activity-total="pytorch">129+</strong><span>PyTorch activity</span>
+            <button class="activity-metric__trigger" type="button" aria-expanded="false" aria-describedby="pytorch-activity-detail" data-activity-trigger="pytorch" data-activity-target="pytorch-activity-detail">
+              <span aria-hidden="true">i</span><span class="sr-only">Show PyTorch activity breakdown</span>
+            </button>
+            <div class="activity-popover" id="pytorch-activity-detail" role="tooltip" data-activity-popover>
+              <p>PyTorch activity</p>
+              <dl>
+                <div><dt>Authored PRs</dt><dd data-activity-count="pytorch-prs">49</dd></div>
+                <div><dt>Issues opened</dt><dd data-activity-count="pytorch-issues">16</dd></div>
+                <div><dt>PRs reviewed</dt><dd data-activity-count="pytorch-reviews">5</dd></div>
+                <div><dt>Discussion threads joined</dt><dd data-activity-count="pytorch-comments">59</dd></div>
+              </dl>
+              <small>Measures are additive and may involve the same PR or issue.</small>
+            </div>
+          </div>
           <div><strong>L1–L4</strong><span>integration trust model</span></div>
         </div>
       </section>
