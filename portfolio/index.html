@@ -119,10 +119,11 @@
 
         <div class="hero-proof" aria-label="Selected contribution highlights" data-reveal data-delay="180">
           <div class="activity-metric" data-activity-card>
-            <strong data-activity-total="test-infra">233+</strong><span>test-infra activity</span>
-            <button class="activity-metric__trigger" type="button" aria-controls="test-infra-activity-detail" aria-expanded="false" data-activity-trigger="test-infra" data-activity-target="test-infra-activity-detail">
-              <span aria-hidden="true">i</span><span class="sr-only">Show test-infra activity breakdown</span>
-            </button>
+            <div class="activity-metric__value">
+              <strong data-activity-total="test-infra">233+</strong>
+              <button class="activity-metric__trigger" type="button" aria-controls="test-infra-activity-detail" aria-expanded="false" aria-label="View test-infra activity breakdown" data-activity-trigger="test-infra" data-activity-target="test-infra-activity-detail"><span aria-hidden="true">View split ↘</span></button>
+            </div>
+            <span>test-infra activity</span>
             <div class="activity-popover" id="test-infra-activity-detail" role="tooltip" data-activity-popover>
               <p>test-infra activity</p>
               <dl>
@@ -135,10 +136,11 @@
             </div>
           </div>
           <div class="activity-metric" data-activity-card>
-            <strong data-activity-total="pytorch">129+</strong><span>PyTorch activity</span>
-            <button class="activity-metric__trigger" type="button" aria-controls="pytorch-activity-detail" aria-expanded="false" data-activity-trigger="pytorch" data-activity-target="pytorch-activity-detail">
-              <span aria-hidden="true">i</span><span class="sr-only">Show PyTorch activity breakdown</span>
-            </button>
+            <div class="activity-metric__value">
+              <strong data-activity-total="pytorch">129+</strong>
+              <button class="activity-metric__trigger" type="button" aria-controls="pytorch-activity-detail" aria-expanded="false" aria-label="View PyTorch activity breakdown" data-activity-trigger="pytorch" data-activity-target="pytorch-activity-detail"><span aria-hidden="true">View split ↘</span></button>
+            </div>
+            <span>PyTorch activity</span>
             <div class="activity-popover" id="pytorch-activity-detail" role="tooltip" data-activity-popover>
               <p>PyTorch activity</p>
               <dl>
