@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Subin George builds compatibility evidence systems for PyTorch and ML infrastructure." />
+    <meta name="theme-color" content="#081119" />
+    <title>Trace | Subin George</title>
+    <link rel="icon" href="../../assets/subin-mark-48.png" sizes="48x48" type="image/png" />
+    <link rel="stylesheet" href="../experiments.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="study-page trace">
+      <header class="study-header study-shell">
+        <a class="study-brand" href="../" aria-label="Subin George portfolio home"><span class="study-brand__mark">S</span><span>Subin George</span></a>
+        <nav class="study-nav" aria-label="Primary navigation"><a href="#systems">Systems</a><a href="#approach">Approach</a><a href="#notes">Notes</a></nav>
+        <span class="study-presence">Open to architecture roles</span>
+      </header>
+
+      <main id="main" class="study-shell">
+        <section class="trace-hero">
+          <div class="trace-copy">
+            <p class="section-title">ML infrastructure and upstream systems</p>
+            <h1>Make the path to compatibility visible.</h1>
+            <p>Subin George designs the systems that carry a PyTorch change through downstream validation and back as evidence a maintainer can use.</p>
+            <div class="trace-actions"><a class="trace-button" href="#systems">Explore selected systems</a><a class="quiet-link" href="https://github.com/subinz1" target="_blank" rel="noreferrer">Open GitHub profile</a></div>
+          </div>
+
+          <section class="trace-map glass" aria-label="A trace of a compatibility decision">
+            <div class="trace-map__header"><span>Compatibility trace</span><span>revision → decision</span></div>
+            <svg viewBox="0 0 700 430" fill="none" aria-hidden="true"><path d="M115 114C260 114 247 208 347 208C470 208 440 112 590 112M347 208C469 208 490 330 592 330M347 208C244 208 207 330 126 330" stroke="#73d8bd" stroke-width="1.5" stroke-dasharray="5 7" opacity=".65" /><circle cx="347" cy="208" r="5" fill="#73d8bd" /></svg>
+            <div class="trace-node trace-node--source"><small>Change</small><strong>pytorch/pytorch</strong><span>Revision and intent</span></div>
+            <div class="trace-node trace-node--relay"><small>Relay</small><strong>CRCR</strong><span>Targeted dispatch</span></div>
+            <div class="trace-node trace-node--target"><small>Validation</small><strong>RHEL CI</strong><span>Real environment</span></div>
+            <div class="trace-node trace-node--decision"><small>Decision</small><strong>Maintainer</strong><span>Actionable evidence</span></div>
+            <div class="trace-node trace-node--hud"><small>Record</small><strong>PyTorch HUD</strong><span>Public provenance</span></div>
+          </section>
+
+          <div class="trace-ledger" aria-label="Contribution highlights"><div><strong>233+</strong><span>pytorch/test-infra activity</span></div><div><strong>129+</strong><span>pytorch/pytorch activity</span></div><div><strong>L1–L4</strong><span>integration trust model</span></div></div>
+        </section>
+
+        <section class="trace-story" id="approach">
+          <div><p class="section-title">How I work</p><h2>Reliability is not a status. It is a chain of evidence.</h2></div>
+          <div>
+            <p>I work at the boundary between an upstream project and the systems that must keep pace with it. The goal is not just to run a job: preserve its identity, prove what was tested, and let the result reach the person who can act.</p>
+            <ol class="trace-steps">
+              <li><b>01</b><strong>Capture change context</strong><span>revision, event, scope</span></li>
+              <li><b>02</b><strong>Validate in the right target</strong><span>hardware, OS, build</span></li>
+              <li><b>03</b><strong>Keep the final result connected</strong><span>attempt, artifact, report</span></li>
+              <li><b>04</b><strong>Bring evidence to the decision</strong><span>HUD, review, release</span></li>
+            </ol>
+          </div>
+        </section>
+
+        <section class="trace-systems" id="systems" aria-label="Selected systems">
+          <article class="trace-system"><p>PyTorch ecosystem</p><h3>Cross-Repository CI Relay</h3><p>A tiered relay that returns authenticated compatibility evidence from out-of-tree backend CI.</p><a class="quiet-link" href="https://hud.pytorch.org/crcr" target="_blank" rel="noreferrer">View CRCR HUD</a></article>
+          <article class="trace-system"><p>Downstream CI</p><h3>RHEL CI Enablement</h3><p>Nightly RHEL validation that makes upstream compatibility traceable and actionable.</p><a class="quiet-link" href="../field-notes/rhel-ci-enablement/">Read field note</a></article>
+          <article class="trace-system"><p>Release engineering</p><h3>Hermetic PyTorch Builds</h3><p>Repeatable, qualified wheel builds with explicit source and platform evidence.</p><a class="quiet-link" href="../field-notes/hermetic-pytorch-builds/">Read field note</a></article>
+        </section>
+
+        <section class="trace-story" id="notes">
+          <div><p class="section-title">Field notes and recognition</p><h2>Work shared in the open.</h2></div>
+          <div>
+            <p>I write practical engineering notes about CI provenance, release readiness, hermetic builds, and getting hardware validation close to upstream change.</p>
+            <ol class="trace-steps"><li><b>Talk</b><strong>PyTorch lightning talk</strong><span><a class="quiet-link" href="https://www.youtube.com/watch?v=cEOFqw0W_sU&amp;list=PLVqjs87Mef-U&amp;index=46&amp;pp=iAQBsAgC" target="_blank" rel="noreferrer">Watch recording</a></span></li><li><b>Guide</b><strong>PyTorch contributor reference guide</strong><span><a class="quiet-link" href="../pytorch-contributor-guide/">Read guide</a></span></li><li><b>Profile</b><strong>PyTorch Foundation Contributor Award nominee</strong><span>2026</span></li></ol>
+          </div>
+        </section>
+
+        <footer class="study-footer"><span>Subin George · India</span><a href="mailto:sugeorge@redhat.com">Start a conversation</a></footer>
+      </main>
+    </div>
+  </body>
+</html>
