@@ -108,6 +108,22 @@
             <span>Reliable CI is explainable</span>
             <strong>From an upstream revision to a decision a maintainer can trust.</strong>
           </div>
+          <div class="evidence-record__trace" aria-hidden="true">
+            <div class="evidence-record__trace-meta"><span>TRACE / ACTIVE</span><span>PUBLIC CI</span></div>
+            <svg viewBox="0 0 640 250" focusable="false">
+              <path class="trace-grid" d="M32 46H608M32 100H608M32 154H608M32 208H608" />
+              <path class="trace-link trace-link--muted" d="M72 184C156 184 146 72 252 72S360 174 462 174 514 92 574 92" />
+              <path class="trace-link trace-link--active" d="M72 184C156 184 146 72 252 72S360 174 462 174 514 92 574 92" />
+              <circle class="trace-node" cx="72" cy="184" r="8" />
+              <circle class="trace-node" cx="252" cy="72" r="8" />
+              <circle class="trace-node" cx="462" cy="174" r="8" />
+              <circle class="trace-node trace-node--final" cx="574" cy="92" r="10" />
+              <text x="52" y="224">SOURCE</text>
+              <text x="216" y="40">VALIDATE</text>
+              <text x="422" y="214">EVIDENCE</text>
+              <text x="548" y="58">ACT</text>
+            </svg>
+          </div>
           <ol class="evidence-record__steps">
             <li><span>01</span><div><strong>Upstream change</strong><p>Capture the revision, trigger, and intended scope.</p></div></li>
             <li><span>02</span><div><strong>Target validation</strong><p>Exercise the right build and tests in the real environment.</p></div></li>
@@ -118,6 +134,7 @@
         </aside>
 
         <div class="hero-proof" aria-label="Selected contribution highlights" data-reveal data-delay="180">
+          <div class="hero-proof__heading"><span>Contribution index</span><span>Public work / 2026</span></div>
           <div class="activity-metric" data-activity-card>
             <div class="activity-metric__value">
               <strong data-activity-total="test-infra">233+</strong>
