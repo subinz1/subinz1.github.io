@@ -705,3 +705,14 @@ h1 { font-size: clamp(3.45rem, 6.4vw, 6.8rem); font-weight: 500; letter-spacing:
   line-height: 1;
   width: 26px;
 }
+
+/* Keep the signature compact and readable at every header width. */
+.portfolio-page .brand {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: .875rem;
+  font-weight: 650;
+  gap: .625rem;
+  letter-spacing: -.012em;
+}
+
+.portfolio-page .brand-word { line-height: 1; }
