@@ -121,11 +121,11 @@
           <div class="activity-metric" data-activity-card>
             <div class="activity-metric__value">
               <strong data-activity-total="test-infra">233+</strong>
-              <button class="activity-metric__trigger" type="button" aria-controls="test-infra-activity-detail" aria-expanded="false" aria-label="View test-infra activity breakdown" data-activity-trigger="test-infra" data-activity-target="test-infra-activity-detail"><span aria-hidden="true">View split ↘</span></button>
+              <button class="activity-metric__trigger" type="button" aria-controls="test-infra-activity-detail" aria-expanded="false" aria-label="View pytorch/test-infra activity breakdown" data-activity-trigger="test-infra" data-activity-target="test-infra-activity-detail"><span aria-hidden="true">View split ↘</span></button>
             </div>
-            <span>test-infra activity</span>
+            <span>pytorch/test-infra activity</span>
             <div class="activity-popover" id="test-infra-activity-detail" role="tooltip" data-activity-popover>
-              <p>test-infra activity</p>
+              <p>pytorch/test-infra activity</p>
               <dl>
                 <div><dt>Authored PRs</dt><dd data-activity-count="test-infra-prs">82</dd></div>
                 <div><dt>Issues opened</dt><dd data-activity-count="test-infra-issues">12</dd></div>
@@ -138,11 +138,11 @@
           <div class="activity-metric" data-activity-card>
             <div class="activity-metric__value">
               <strong data-activity-total="pytorch">129+</strong>
-              <button class="activity-metric__trigger" type="button" aria-controls="pytorch-activity-detail" aria-expanded="false" aria-label="View PyTorch activity breakdown" data-activity-trigger="pytorch" data-activity-target="pytorch-activity-detail"><span aria-hidden="true">View split ↘</span></button>
+              <button class="activity-metric__trigger" type="button" aria-controls="pytorch-activity-detail" aria-expanded="false" aria-label="View pytorch/pytorch activity breakdown" data-activity-trigger="pytorch" data-activity-target="pytorch-activity-detail"><span aria-hidden="true">View split ↘</span></button>
             </div>
-            <span>PyTorch activity</span>
+            <span>pytorch/pytorch activity</span>
             <div class="activity-popover" id="pytorch-activity-detail" role="tooltip" data-activity-popover>
-              <p>PyTorch activity</p>
+              <p>pytorch/pytorch activity</p>
               <dl>
                 <div><dt>Authored PRs</dt><dd data-activity-count="pytorch-prs">49</dd></div>
                 <div><dt>Issues opened</dt><dd data-activity-count="pytorch-issues">16</dd></div>
@@ -228,7 +228,7 @@
               <div class="system-dossier__meta"><span>Release engineering</span><span>Inputs → qualified wheel</span></div><h3>Hermetic PyTorch Builds</h3><p class="system-dossier__lede">Internally controlled builds that qualify approved source inputs and ship release-ready PyTorch wheels without a public-network dependency at build time.</p><dl class="system-dossier__brief"><div><dt>Constraint</dt><dd>Release infrastructure must be reproducible even when external dependency channels are unavailable.</dd></div><div><dt>System</dt><dd>Version-aware package resolution, deterministic recipes, and platform validation across supported targets.</dd></div><div><dt>Outcome</dt><dd>Release decisions have traceable inputs and repeatable evidence.</dd></div></dl><ul class="tag-list"><li>PyTorch</li><li>RHEL AI</li><li>Supply chain</li><li>Release engineering</li></ul><div class="project-links"><a class="text-link" href="field-notes/hermetic-pytorch-builds/">Read the hermetic-build field note <span aria-hidden="true">↗</span></a></div>
             </article>
             <article class="system-dossier" id="system-upstream" role="tabpanel" aria-labelledby="system-tab-upstream" data-system-panel="upstream" hidden>
-              <div class="system-dossier__meta"><span>Core contribution</span><span>Issue → evidence → merge</span></div><h3>PyTorch and test-infra</h3><p class="system-dossier__lede">Upstream fixes and reviews across numerical correctness, CI signal quality, dashboards, and out-of-tree backend workflows.</p><dl class="system-dossier__brief"><div><dt>Constraint</dt><dd>Infrastructure improvements need careful scoping and evidence that maintainers can independently assess.</dd></div><div><dt>System</dt><dd>Focused patches, review feedback, reproducible tests, and durable operator-facing observability.</dd></div><div><dt>Outcome</dt><dd>Changes improve the confidence and usability of the PyTorch ecosystem.</dd></div></dl><ul class="tag-list"><li>Python</li><li>C++</li><li>TypeScript</li></ul><div class="project-links"><a class="text-link" href="https://github.com/pytorch/test-infra" target="_blank" rel="noreferrer">See test-infra <span aria-hidden="true">↗</span></a></div>
+              <div class="system-dossier__meta"><span>Core contribution</span><span>Issue → evidence → merge</span></div><h3>pytorch/pytorch + pytorch/test-infra</h3><p class="system-dossier__lede">Upstream fixes and reviews across numerical correctness, CI signal quality, dashboards, and out-of-tree backend workflows.</p><dl class="system-dossier__brief"><div><dt>Constraint</dt><dd>Infrastructure improvements need careful scoping and evidence that maintainers can independently assess.</dd></div><div><dt>System</dt><dd>Focused patches, review feedback, reproducible tests, and durable operator-facing observability.</dd></div><div><dt>Outcome</dt><dd>Changes improve the confidence and usability of the PyTorch ecosystem.</dd></div></dl><ul class="tag-list"><li>Python</li><li>C++</li><li>TypeScript</li></ul><div class="project-links"><a class="text-link" href="https://github.com/pytorch/test-infra" target="_blank" rel="noreferrer">Open pytorch/test-infra <span aria-hidden="true">↗</span></a></div>
             </article>
             <article class="system-dossier" id="system-guide" role="tabpanel" aria-labelledby="system-tab-guide" data-system-panel="guide" hidden>
               <div class="system-dossier__meta"><span>Practical learning</span><span>Concept → runnable practice</span></div><h3>PyTorch Reference Guide</h3><p class="system-dossier__lede">A growing set of practical modules, reference cards, and examples from tensor foundations through CI debugging.</p><dl class="system-dossier__brief"><div><dt>Constraint</dt><dd>New contributors need a path from abstract framework concepts to useful engineering practice.</dd></div><div><dt>System</dt><dd>Small, readable modules with reference material and runnable examples.</dd></div><div><dt>Outcome</dt><dd>Knowledge becomes easier to apply, share, and extend.</dd></div></dl><ul class="tag-list"><li>Python</li><li>PyTorch</li><li>Documentation</li></ul><div class="project-links"><a class="text-link" href="https://subinz1.github.io/pytorch-reference-guide/" target="_blank" rel="noreferrer">Read the guide <span aria-hidden="true">↗</span></a></div>
@@ -344,7 +344,7 @@
                 <p class="career-company">Red Hat · PyTorch Engineering</p>
                 <h3>Senior Software Engineer</h3>
                 <p>Enable PyTorch on RHEL through reproducible builds, CI/CD automation, and upstream compatibility validation.</p>
-                <ul><li>Hermetic builds and downstream wheel delivery</li><li>Upstream PyTorch and test-infra contributions</li><li>CI reliability, CRCR, and HUD observability</li></ul>
+                <ul><li>Hermetic builds and downstream wheel delivery</li><li>Upstream contributions to pytorch/pytorch and pytorch/test-infra</li><li>CI reliability, CRCR, and HUD observability</li></ul>
               </article>
             </li>
             <li data-reveal data-delay="70">
