@@ -106,7 +106,7 @@ const sectionObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
     if (!entry.isIntersecting) return;
     document.querySelectorAll(".site-nav a").forEach((link) => {
-      link.classList.toggle("is-active", link.getAttribute("href") === `#${entry.target.id}`);
+      link.classList.toggle("is-active", link.hash === `#${entry.target.id}`);
     });
   });
 }, { rootMargin: "-40% 0px -55% 0px" });
