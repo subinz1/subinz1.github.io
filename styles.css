@@ -714,34 +714,40 @@ h1 { font-size: clamp(3.45rem, 6.4vw, 6.8rem); font-weight: 500; letter-spacing:
 }
 
 .winter-edition main, .winter-edition .site-footer { position: relative; z-index: 1; }
-.winter-snow { inset: 0; overflow: hidden; pointer-events: none; position: fixed; z-index: 0; }
-.winter-snow span { animation: winter-snowfall var(--fall) linear var(--delay) infinite; color: var(--winter-snow); filter: blur(var(--blur)); font-size: var(--size); left: var(--left); opacity: var(--alpha); position: absolute; text-shadow: 0 0 .8rem color-mix(in srgb, var(--winter-snow) 45%, transparent); top: -2rem; user-select: none; will-change: transform; }
-@keyframes winter-snowfall { to { transform: translate3d(var(--drift), 110vh, 0) rotate(165deg); } }
 
-.seasonal-tree { bottom: -1.4rem; margin: 0; opacity: .38; pointer-events: none; position: fixed; right: clamp(.4rem, 4vw, 4.5rem); transform-origin: center bottom; width: clamp(7.5rem, 14vw, 12rem); z-index: 0; }
-.seasonal-tree svg { display: block; filter: drop-shadow(0 1rem 1rem rgba(0, 0, 0, .28)); height: auto; overflow: visible; width: 100%; }
-.seasonal-tree__ground { fill: none; stroke: color-mix(in srgb, var(--winter-snow) 55%, transparent); stroke-linecap: round; stroke-width: 2; }
-.seasonal-tree__trunk { fill: color-mix(in srgb, var(--winter-candle) 64%, #3e2c1c); }
-.seasonal-tree__branches { animation: winter-tree-breathe 5.6s ease-in-out infinite; fill: var(--winter-pine-deep); stroke: color-mix(in srgb, var(--winter-snow) 32%, transparent); stroke-linejoin: round; stroke-width: 1.35; transform-box: fill-box; transform-origin: center bottom; }
-.seasonal-tree__circuit { animation: winter-tree-signal 4.6s linear infinite; fill: none; stroke: color-mix(in srgb, var(--winter-snow) 68%, var(--winter-pine)); stroke-dasharray: 4 10; stroke-linecap: round; stroke-width: 1.35; }
-.seasonal-tree circle { animation: winter-tree-node 3.2s ease-in-out infinite; fill: var(--winter-candle); transform-box: fill-box; transform-origin: center; }
-.seasonal-tree circle:nth-of-type(2) { animation-delay: -.65s; }
-.seasonal-tree circle:nth-of-type(3) { animation-delay: -1.3s; }
-.seasonal-tree circle:nth-of-type(4) { animation-delay: -1.95s; }
-.seasonal-tree circle:nth-of-type(5) { animation-delay: -2.6s; }
-.seasonal-tree__star { animation: winter-tree-star 2.8s ease-in-out infinite; fill: var(--winter-candle); filter: drop-shadow(0 0 .32rem color-mix(in srgb, var(--winter-candle) 65%, transparent)); transform-box: fill-box; transform-origin: center; }
-@keyframes winter-tree-breathe { 50% { transform: translateY(-1px) scale(1.012); } }
-@keyframes winter-tree-signal { to { stroke-dashoffset: -56; } }
-@keyframes winter-tree-node { 50% { filter: drop-shadow(0 0 .24rem var(--winter-candle)); transform: scale(1.3); } }
-@keyframes winter-tree-star { 50% { filter: drop-shadow(0 0 .75rem var(--winter-candle)); transform: scale(1.2); } }
+.seasonal-tree { bottom: -1.2rem; margin: 0; opacity: .58; pointer-events: none; position: fixed; right: clamp(.5rem, 3vw, 4rem); width: clamp(9rem, 16vw, 14rem); z-index: 0; }
+.seasonal-tree svg { display: block; filter: drop-shadow(0 1rem 1.1rem rgba(0, 0, 0, .28)); height: auto; overflow: visible; width: 100%; }
+.seasonal-tree__shadow { fill: rgba(3, 24, 18, .45); }
+.seasonal-tree__trunk { fill: #71472d; stroke: #3f2719; stroke-width: 2; }
+.seasonal-tree__evergreen { animation: winter-tree-sway 5.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center bottom; }
+.seasonal-tree__tier { fill: url(#seasonal-tree-green); stroke: #073c2c; stroke-linejoin: round; stroke-width: 2.2; }
+.seasonal-tree__tier--top { opacity: .95; }
+.seasonal-tree__tier--middle { opacity: .98; }
+.seasonal-tree__boughs { fill: none; opacity: .46; stroke: #b8eb8d; stroke-linecap: round; stroke-width: 2; }
+.seasonal-tree__garland { fill: none; stroke: #f1c64d; stroke-dasharray: 2 5; stroke-linecap: round; stroke-width: 2.3; }
+.seasonal-tree__lights circle { animation: winter-tree-light 1.9s ease-in-out infinite alternate; fill: #ffe97b; filter: drop-shadow(0 0 .25rem #ffdc67); }
+.seasonal-tree__lights circle:nth-child(3n + 2) { animation-delay: -.7s; fill: #ff7064; }
+.seasonal-tree__lights circle:nth-child(3n) { animation-delay: -1.25s; fill: #91e6df; }
+.seasonal-tree__ornament { animation: winter-tree-ornament 3.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center top; }
+.seasonal-tree__ornament:nth-child(2n) { animation-delay: -1.4s; }
+.seasonal-tree__ornament circle { stroke: rgba(81, 26, 23, .42); stroke-width: 1.25; }
+.seasonal-tree__ornament path { fill: #f6d47b; stroke: #8f5a19; stroke-width: 1; }
+.seasonal-tree__ornament--red circle, .seasonal-tree__bows { fill: url(#seasonal-tree-red); }
+.seasonal-tree__ornament--gold circle { fill: url(#seasonal-tree-gold); }
+.seasonal-tree__bows { animation: winter-tree-bow 4.8s ease-in-out infinite; stroke: #871c2a; stroke-linejoin: round; stroke-width: 1.25; transform-box: fill-box; transform-origin: center; }
+.seasonal-tree__star { animation: winter-tree-star 2.6s ease-in-out infinite; fill: url(#seasonal-tree-gold); filter: drop-shadow(0 0 .36rem rgba(255, 223, 88, .86)); stroke: #9b6513; stroke-linejoin: round; stroke-width: 1.25; transform-box: fill-box; transform-origin: center; }
+@keyframes winter-tree-sway { 50% { transform: rotate(1.2deg) translateY(-1px); } }
+@keyframes winter-tree-light { to { filter: drop-shadow(0 0 .55rem #ffec86); opacity: .54; } }
+@keyframes winter-tree-ornament { 50% { transform: rotate(4deg) translateY(1px); } }
+@keyframes winter-tree-bow { 50% { transform: scale(1.06) rotate(-2deg); } }
+@keyframes winter-tree-star { 50% { filter: drop-shadow(0 0 .75rem #ffdf58); transform: scale(1.12) rotate(4deg); } }
 
 @media (max-width: 760px) {
-  .winter-snow span:nth-child(n + 9) { display: none; }
   .seasonal-tree { bottom: -.8rem; opacity: .3; right: -.6rem; width: 7.5rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .winter-snow { display: none; }
+  .seasonal-tree__evergreen, .seasonal-tree__lights circle, .seasonal-tree__ornament, .seasonal-tree__bows, .seasonal-tree__star { animation: none; }
 }
 
 /* Trace study mark promoted to the primary portfolio header. */

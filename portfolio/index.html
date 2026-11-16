@@ -60,23 +60,9 @@
     <title>Subin George Malana | PyTorch &amp; ML Infrastructure Engineer</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="script.js" defer></script>
+    <script type="module" src="/snowfall.js"></script>
   </head>
   <body class="portfolio-page winter-edition">
-    <div class="winter-snow" aria-hidden="true">
-      <span style="--left: 4%; --size: .92rem; --blur: .5px; --alpha: .28; --drift: .35rem; --fall: 14s; --delay: -7s;">❄</span>
-      <span style="--left: 12%; --size: .34rem; --blur: 0; --alpha: .48; --drift: -.12rem; --fall: 25s; --delay: -16s;">❄</span>
-      <span style="--left: 21%; --size: 1.1rem; --blur: 1px; --alpha: .2; --drift: .42rem; --fall: 17s; --delay: -3s;">❄</span>
-      <span style="--left: 28%; --size: .46rem; --blur: 0; --alpha: .42; --drift: -.2rem; --fall: 22s; --delay: -13s;">❄</span>
-      <span style="--left: 36%; --size: .68rem; --blur: .25px; --alpha: .34; --drift: .18rem; --fall: 19s; --delay: -5s;">❄</span>
-      <span style="--left: 45%; --size: .28rem; --blur: 0; --alpha: .5; --drift: -.08rem; --fall: 28s; --delay: -21s;">❄</span>
-      <span style="--left: 53%; --size: .86rem; --blur: .7px; --alpha: .24; --drift: .3rem; --fall: 16s; --delay: -9s;">❄</span>
-      <span style="--left: 61%; --size: .4rem; --blur: 0; --alpha: .45; --drift: -.16rem; --fall: 24s; --delay: -15s;">❄</span>
-      <span style="--left: 68%; --size: 1.02rem; --blur: 1.1px; --alpha: .18; --drift: .38rem; --fall: 18s; --delay: -14s;">❄</span>
-      <span style="--left: 76%; --size: .5rem; --blur: 0; --alpha: .38; --drift: -.18rem; --fall: 21s; --delay: -5s;">❄</span>
-      <span style="--left: 83%; --size: .74rem; --blur: .35px; --alpha: .3; --drift: .2rem; --fall: 20s; --delay: -12s;">❄</span>
-      <span style="--left: 91%; --size: .3rem; --blur: 0; --alpha: .5; --drift: -.1rem; --fall: 27s; --delay: -18s;">❄</span>
-      <span style="--left: 97%; --size: .96rem; --blur: .8px; --alpha: .21; --drift: .32rem; --fall: 15s; --delay: -2s;">❄</span>
-    </div>
     <a class="skip-link" href="/portfolio/#main">Skip to content</a>
     <header class="site-header" data-header>
       <a class="brand" href="/portfolio/#home" aria-label="Subin George home">
@@ -550,13 +536,50 @@
       <span>© Subin George Malana</span>
     </footer>
     <figure class="seasonal-tree" aria-hidden="true">
-      <svg viewBox="0 0 128 166" role="img">
-        <path class="seasonal-tree__ground" d="M18 150c16-11 76-11 93 0" />
-        <path class="seasonal-tree__trunk" d="M58 128h13v22H58z" />
-        <path class="seasonal-tree__branches" d="m64 13 20 42H72l24 43H80l29 44H19l29-44H32l24-43H44z" />
-        <path class="seasonal-tree__circuit" d="M64 37v72M44 78h40M34 116h60" />
-        <circle cx="64" cy="37" r="3" /><circle cx="44" cy="78" r="3" /><circle cx="84" cy="78" r="3" /><circle cx="34" cy="116" r="3" /><circle cx="94" cy="116" r="3" />
-        <path class="seasonal-tree__star" d="m64 5 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z" />
+      <svg viewBox="0 0 200 270" role="img">
+        <defs>
+          <linearGradient id="seasonal-tree-green" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stop-color="#61c46f" />
+            <stop offset=".46" stop-color="#16814c" />
+            <stop offset="1" stop-color="#075235" />
+          </linearGradient>
+          <linearGradient id="seasonal-tree-red" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stop-color="#ff806b" />
+            <stop offset="1" stop-color="#bd2634" />
+          </linearGradient>
+          <radialGradient id="seasonal-tree-gold">
+            <stop offset="0" stop-color="#fff7a6" />
+            <stop offset=".55" stop-color="#f5c84b" />
+            <stop offset="1" stop-color="#bd7610" />
+          </radialGradient>
+        </defs>
+        <ellipse class="seasonal-tree__shadow" cx="100" cy="245" rx="74" ry="12" />
+        <g class="seasonal-tree__evergreen">
+          <path class="seasonal-tree__trunk" d="M90 207h20v39H90z" />
+          <path class="seasonal-tree__tier seasonal-tree__tier--top" d="m100 32 40 81-19-7 35 55H44l35-55-19 7z" />
+          <path class="seasonal-tree__tier seasonal-tree__tier--middle" d="m100 72 55 108-26-10 38 55H33l38-55-26 10z" />
+          <path class="seasonal-tree__tier seasonal-tree__tier--base" d="m100 120 66 111-31-11 28 27H37l28-27-31 11z" />
+          <path class="seasonal-tree__boughs" d="M61 151c19 6 37 7 53 1m-72 41c35 8 72 7 116-2m-110 30c34 8 70 8 104 0" />
+          <path class="seasonal-tree__garland" d="M66 128c22 15 48 16 69 0M48 172c33 21 75 21 105 0M42 211c35 20 81 20 116 0" />
+          <g class="seasonal-tree__lights">
+            <circle cx="81" cy="135" r="3" /><circle cx="109" cy="142" r="3" /><circle cx="132" cy="133" r="3" />
+            <circle cx="66" cy="181" r="3" /><circle cx="96" cy="191" r="3" /><circle cx="130" cy="184" r="3" /><circle cx="151" cy="178" r="3" />
+            <circle cx="62" cy="216" r="3" /><circle cx="87" cy="224" r="3" /><circle cx="117" cy="221" r="3" /><circle cx="143" cy="215" r="3" />
+          </g>
+          <g class="seasonal-tree__ornaments">
+            <g class="seasonal-tree__ornament seasonal-tree__ornament--red"><circle cx="105" cy="112" r="8" /><path d="M102 103v-4h6v4" /></g>
+            <g class="seasonal-tree__ornament seasonal-tree__ornament--gold"><circle cx="77" cy="166" r="9" /><path d="M74 156v-4h6v4" /></g>
+            <g class="seasonal-tree__ornament seasonal-tree__ornament--red"><circle cx="127" cy="172" r="9" /><path d="M124 162v-4h6v4" /></g>
+            <g class="seasonal-tree__ornament seasonal-tree__ornament--gold"><circle cx="55" cy="204" r="9" /><path d="M52 194v-4h6v4" /></g>
+            <g class="seasonal-tree__ornament seasonal-tree__ornament--red"><circle cx="102" cy="213" r="10" /><path d="M99 202v-4h6v4" /></g>
+            <g class="seasonal-tree__ornament seasonal-tree__ornament--gold"><circle cx="145" cy="207" r="9" /><path d="M142 197v-4h6v4" /></g>
+          </g>
+          <g class="seasonal-tree__bows">
+            <path d="M89 151c-11-13-22-3-11 6l11 7 11-7c11-9 0-19-11-6Z" /><rect x="96" y="153" width="8" height="10" rx="2" />
+            <path d="M88 198c-12-14-23-3-11 7l11 7 12-7c11-10 0-21-12-7Z" /><rect x="96" y="200" width="8" height="10" rx="2" />
+          </g>
+        </g>
+        <path class="seasonal-tree__star" d="m100 7 7 17 19 1-14 13 5 19-17-9-17 9 5-19-14-13 19-1z" />
       </svg>
     </figure>
     <div class="toast" role="status" aria-live="polite" data-toast></div>
